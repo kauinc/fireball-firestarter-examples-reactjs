@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import {
   VideoTrack,
   useTracks,
@@ -12,18 +13,24 @@ const VIDEO_SOURCES = [
 
 /**
  * Renders the first subscribed remote video track edge-to-edge without cropping.
+ *
+ * @param {{ onVideoAvailableChange?: (available: boolean) => void }} props
  */
-export function StreamViewport() {
+export function StreamViewport({ onVideoAvailableChange }) {
   const tracks = useTracks(VIDEO_SOURCES, { onlySubscribed: true })
   const videoTracks = tracks.filter(
     (trackRef) => trackRef.publication?.kind === Track.Kind.Video,
   )
+  const hasVideo = videoTracks.length > 0
 
-  if (videoTracks.length === 0) {
+  useEffect(() => {
+    onVideoAvailableChange?.(hasVideo)
+  }, [hasVideo, onVideoAvailableChange])
+
+  if (!hasVideo) {
     return <div className="stream-viewport stream-viewport--empty" />
   }
 
-  // Prefer a single primary feed; WHIP/OBS publishes one video track.
   const primary = videoTracks[0]
 
   return (

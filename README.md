@@ -16,8 +16,11 @@ Dev proxies `/api/livekit-token` to the dt-dashboard viewer token endpoint.
 ```
 src/
   app/                 # app shell
+  assets/              # brand logo + UI fonts
   domain/round/        # round_state, commands, overlay mapping
-  features/stream/     # LiveKit fullscreen viewer
+  features/
+    loading/           # branded LOADING / CONNECTING screens
+    stream/            # LiveKit fullscreen viewer
   styles/              # global styles
 ```
 

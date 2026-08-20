@@ -1,5 +1,3 @@
-/* Full-bleed black stage; video uses contain so nothing is cropped. */
-
 .stream-shell,
 .stream-shell__room,
 .stream-viewport,
@@ -12,12 +10,24 @@
 }
 
 .stream-shell {
+  position: relative;
   overflow: hidden;
 }
 
 .stream-shell__room {
   display: block;
   position: relative;
+}
+
+.stream-shell__retry {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .stream-viewport {
