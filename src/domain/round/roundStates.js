@@ -1,6 +1,7 @@
 /**
- * Doof Troop round lifecycle as synced via Supabase `runtime_state.round_state`.
- * LiveKit carries A/V only — these states are the source of truth for overlays.
+ * Doof Troop round lifecycle as written by Unreal into Supabase `rounds.status`.
+ * LiveKit carries A/V only — `status` is the source of truth for overlays.
+ * Do not infer overlay screens from timestamps.
  */
 export const RoundState = Object.freeze({
   ROUND_NONE: 'ROUND_NONE',
@@ -25,16 +26,18 @@ export const IDLE_ROUND_STATES = Object.freeze([
 ])
 
 /**
- * Map operator/runtime states onto the four player-facing overlay stages.
+ * Map round status onto player-facing overlay stages.
  * @typedef {'betting' | 'race_countdown' | 'race' | 'results' | 'idle'} OverlayStage
  */
 
 /** @type {Record<string, OverlayStage>} */
 export const ROUND_STATE_TO_OVERLAY = Object.freeze({
   [RoundState.ROUND_NONE]: 'idle',
+  // Unreal loading map — clear overlay.
   [RoundState.ROUND_CREATED]: 'idle',
   [RoundState.BETTING_OPEN]: 'betting',
-  [RoundState.BETTING_CLOSED]: 'race_countdown',
+  // Countdown in Unreal — clear client overlay.
+  [RoundState.BETTING_CLOSED]: 'idle',
   [RoundState.TRACK_READY]: 'race_countdown',
   [RoundState.RACE_RUNNING]: 'race',
   [RoundState.RESULTS_SENT]: 'results',

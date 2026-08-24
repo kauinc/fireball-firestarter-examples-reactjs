@@ -3,6 +3,7 @@ import {
   LiveKitRoom,
   RoomAudioRenderer,
 } from '@livekit/components-react'
+import { BettingOverlay } from '../../betting/index.js'
 import { LoadingScreen, LoadingStatus } from '../../loading/index.js'
 import { StreamViewport } from './StreamViewport.jsx'
 import { useViewerSession } from '../hooks/useViewerSession.js'
@@ -10,7 +11,7 @@ import '../styles/stream.css'
 
 /**
  * Full-viewport LiveKit viewer for the Doof Troop WHIP ingress room.
- * Shows branded boot screens until the remote video track is available.
+ * Loading/CONNECTING are local boot UI. Overlays follow Supabase `rounds.status` (Realtime).
  */
 export function StreamPage() {
   const { session, error: sessionError, isLoading, reload } = useViewerSession()
@@ -70,6 +71,9 @@ export function StreamPage() {
         <StreamViewport onVideoAvailableChange={handleVideoAvailableChange} />
         <RoomAudioRenderer />
       </LiveKitRoom>
+
+      {/* rounds Realtime early; HUD only when status === BETTING_OPEN. */}
+      <BettingOverlay key="betting-round" />
     </div>
   )
 }

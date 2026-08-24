@@ -1,0 +1,130 @@
+/**
+ * Layout locked to product mockups (Betting_D / P1–P3 / NoBets):
+ * gold timer top-center, betting HUD calibrated for 1024×576 base.
+ */
+
+.betting-overlay {
+  --bet-gold: #e8c85a;
+  --bet-text: #ffffff;
+  --bet-muted: #c8d0e0;
+  --hud-scale: 1;
+  --hud-w: calc(980px * var(--hud-scale));
+  --pattern-label-x: 8px;
+  --history-w: calc(230px * var(--hud-scale));
+  /* HISTORY sits left of mid-controls; keep BALANCE under its center */
+  --history-col-shift: calc(-53px * var(--hud-scale));
+
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  overflow: hidden;
+  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
+  color: var(--bet-text);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.betting-overlay > * {
+  pointer-events: auto;
+}
+
+/* —— Top timer bar (title + gold pill) —— */
+.betting-banner {
+  position: absolute;
+  top: calc(14px * var(--hud-scale));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(5px * var(--hud-scale));
+}
+
+.betting-banner__label {
+  margin: 0;
+  font-size: calc(18px * var(--hud-scale));
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.betting-banner__pill {
+  display: grid;
+  place-items: center;
+  width: calc(200px * var(--hud-scale));
+  height: calc(30px * var(--hud-scale));
+  border-radius: calc(10px * var(--hud-scale));
+  border: calc(2px * var(--hud-scale)) solid #f0d060;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 18, 18, 0.94) 0%,
+    rgba(0, 0, 0, 0.96) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(80, 50, 0, 0.35),
+    inset 0 1px 0 rgba(255, 230, 140, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55);
+}
+
+.betting-banner__value {
+  font-size: calc(22px * var(--hud-scale));
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.betting-overlay[data-phase='closed'] .betting-banner__label {
+  letter-spacing: 0.08em;
+}
+
+/* —— Bottom HUD —— */
+.betting-overlay__bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  padding-top: 0;
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
+  padding-bottom: max(
+    calc(8px * var(--hud-scale)),
+    env(safe-area-inset-bottom, 0px)
+  );
+}
+
+.betting-overlay__fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46vh;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.42) 32%,
+    rgba(0, 0, 0, 0.84) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.betting-overlay__hud {
+  position: relative;
+  z-index: 1;
+  width: var(--hud-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(8px * var(--hud-scale));
+}
