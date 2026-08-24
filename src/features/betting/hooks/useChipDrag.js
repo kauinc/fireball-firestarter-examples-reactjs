@@ -1,0 +1,105 @@
+import { useEffect, useRef, useState } from 'react'
+import { resolveDropAtPoint } from '../utils/betTargets.js'
+
+const MOVE_THRESHOLD_PX_SQ = 36
+
+/**
+ * Chip drag from the footer tray onto board / labels / accessories.
+ * Touch: pointerup stays on the chip button — drop resolves via coords.
+ *
+ * @param {{
+ *   disabled: boolean,
+ *   placeBet: (amount: number, target: Record<string, unknown>) => void,
+ * }} args
+ */
+export function useChipDrag({ disabled, placeBet }) {
+  const [dragChip, setDragChip] = useState(null)
+  const dragRef = useRef(null)
+  const disabledRef = useRef(disabled)
+  const placeBetRef = useRef(placeBet)
+
+  useEffect(() => {
+    disabledRef.current = disabled
+  }, [disabled])
+
+  useEffect(() => {
+    placeBetRef.current = placeBet
+  }, [placeBet])
+
+  useEffect(() => {
+    dragRef.current = dragChip
+  }, [dragChip])
+
+  const isDragging = Boolean(dragChip)
+
+  useEffect(() => {
+    if (!isDragging) return undefined
+
+    function onMove(event) {
+      setDragChip((prev) => {
+        if (!prev) return prev
+        const dx = event.clientX - prev.originX
+        const dy = event.clientY - prev.originY
+        const moved =
+          prev.moved || dx * dx + dy * dy > MOVE_THRESHOLD_PX_SQ
+        return {
+          ...prev,
+          moved,
+          x: event.clientX,
+          y: event.clientY,
+        }
+      })
+    }
+
+    function onUp(event) {
+      const chip = dragRef.current
+      if (chip?.moved && !disabledRef.current) {
+        const target = resolveDropAtPoint(event.clientX, event.clientY)
+        if (target) placeBetRef.current(chip.value, target)
+      }
+      setDragChip(null)
+    }
+
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+    }
+  }, [isDragging])
+
+  function startDrag(event, value) {
+    event.preventDefault()
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId)
+    } catch {
+      /* Pointer capture optional */
+    }
+    setDragChip({
+      value,
+      moved: false,
+      originX: event.clientX,
+      originY: event.clientY,
+      x: event.clientX,
+      y: event.clientY,
+    })
+  }
+
+  function clearDrag() {
+    setDragChip(null)
+  }
+
+  /** True while a chip drag is in progress (moved past threshold). */
+  function isDragPlacement() {
+    return Boolean(dragRef.current?.moved)
+  }
+
+  return {
+    dragChip,
+    startDrag,
+    clearDrag,
+    isDragPlacement,
+  }
+}

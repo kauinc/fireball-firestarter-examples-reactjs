@@ -8,10 +8,10 @@ export const RoundEventType = Object.freeze({
 })
 
 /**
- * Additional statuses stored on `rounds.status` (stats / history),
- * beyond the live `runtime_state.round_state` machine.
+ * Extra values seen on `rounds.result_status` (not the live `status` machine).
+ * `result_status` is normally null; TIMED_OUT when the race hits the max time.
  */
 export const RoundRecordStatus = Object.freeze({
   RESULTS_SENT: 'RESULTS_SENT',
-  RACE_TIMED_OUT: 'RACE_TIMED_OUT',
+  RACE_TIMED_OUT: 'TIMED_OUT',
 })
