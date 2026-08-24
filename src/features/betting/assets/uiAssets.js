@@ -2,6 +2,8 @@ import textBar from '../../../assets/ui/text-description-bar.png'
 import historyBar from '../../../assets/ui/history-bar.png'
 import balanceBar from '../../../assets/ui/balance-value-bar.png'
 import hatsGlassesBar from '../../../assets/ui/hats-glasses-bar.png'
+import hatIcon from '../../../assets/ui/hat.png'
+import glassesIcon from '../../../assets/ui/glasses.png'
 import allPositionBar from '../../../assets/ui/all-position-bar.png'
 import positionFrame from '../../../assets/ui/frame-position-bar.png'
 import scrollPositionBar from '../../../assets/ui/scroll-position-bar.png'
@@ -19,12 +21,15 @@ import redChip from '../../../assets/ui/chip-red.png'
 import greenChip from '../../../assets/ui/chip-green.png'
 import chipHighlighter from '../../../assets/ui/chip-highlighter.png'
 import infoButton from '../../../assets/ui/info-button.png'
+import fullscreen from '../../../assets/ui/fullscreen.png'
 
 export const uiAssets = Object.freeze({
   textBar,
   historyBar,
   balanceBar,
   hatsGlassesBar,
+  hatIcon,
+  glassesIcon,
   allPositionBar,
   positionFrame,
   scrollPositionBar,
@@ -36,6 +41,7 @@ export const uiAssets = Object.freeze({
   activeToggle,
   chipHighlighter,
   infoButton,
+  fullscreen,
   chips: Object.freeze({
     0.2: whiteChip,
     0.5: yellowChip,

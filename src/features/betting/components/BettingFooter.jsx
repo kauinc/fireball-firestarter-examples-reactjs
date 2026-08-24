@@ -4,7 +4,7 @@ import { formatMoney } from '../utils/formatMoney.js'
 
 /**
  * Bottom chrome matching product mockup:
- * Balance · Crazy Combo · Clear · chips · x2 · Total Bet · menu · fullscreen
+ * Balance · Crazy Combo · Clear · chips · x2 · Total Bet · menu
  */
 export function BettingFooter({
   disabled = false,
@@ -15,8 +15,6 @@ export function BettingFooter({
   onToggleCrazyCombo,
   onClear,
   onDouble,
-  onToggleFullscreen,
-  isFullscreen = false,
   balance = 5100,
   totalBet = 0,
 }) {
@@ -132,16 +130,6 @@ export function BettingFooter({
         disabled={disabled}
       >
         <span className="betting-footer__menu-icon" aria-hidden="true" />
-      </button>
-
-      <button
-        type="button"
-        className={`betting-footer__fullscreen${isFullscreen ? ' is-active' : ''}`}
-        aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
-        aria-pressed={isFullscreen}
-        onClick={onToggleFullscreen}
-      >
-        <span className="betting-footer__fullscreen-icon" aria-hidden="true" />
       </button>
     </footer>
   )
