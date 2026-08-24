@@ -128,3 +128,33 @@
   align-items: center;
   gap: calc(8px * var(--hud-scale));
 }
+
+/* Fullscreen — pinned to viewport bottom-right on any screen size */
+.betting-overlay__fullscreen {
+  position: absolute;
+  z-index: 5;
+  right: max(10px, env(safe-area-inset-right, 0px));
+  bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  width: calc(44px * var(--hud-scale));
+  height: calc(44px * var(--hud-scale));
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.betting-overlay__fullscreen-icon {
+  width: calc(32px * var(--hud-scale));
+  height: calc(26px * var(--hud-scale));
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.betting-overlay__fullscreen.is-active .betting-overlay__fullscreen-icon {
+  transform: scale(0.92);
+  opacity: 0.95;
+}

@@ -63,6 +63,8 @@ export function MidControls({
               bet.target.type === 'accessory' && bet.target.accessory === item,
           )
           const target = accessoryTarget(item)
+          const iconSrc =
+            item === 'Hats' ? uiAssets.hatIcon : uiAssets.glassesIcon
           return (
             <button
               key={item}
@@ -86,7 +88,15 @@ export function MidControls({
                 else onAccessoryChange(selected ? null : item)
               }}
             >
-              <span>{item}</span>
+              <span className="mid-controls__accessory-label">{item}</span>
+              <img
+                src={iconSrc}
+                alt=""
+                className={`mid-controls__accessory-icon${
+                  item === 'Glasses' ? ' mid-controls__accessory-icon--glasses' : ''
+                }`}
+                draggable={false}
+              />
               {stack ? (
                 <span className="mid-controls__accessory-chip">
                   <ChipStack chips={stack.chips} />

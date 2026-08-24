@@ -117,12 +117,25 @@ export function BettingOverlay() {
             onToggleCrazyCombo={() => setCrazyCombo((v) => !v)}
             onClear={clearBets}
             onDouble={doubleBets}
-            onToggleFullscreen={toggleFullscreen}
-            isFullscreen={isFullscreen}
             totalBet={totalBet}
           />
         </div>
       </div>
+
+      <button
+        type="button"
+        className={`betting-overlay__fullscreen${isFullscreen ? ' is-active' : ''}`}
+        aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
+        aria-pressed={isFullscreen}
+        onClick={toggleFullscreen}
+      >
+        <img
+          src={uiAssets.fullscreen}
+          alt=""
+          className="betting-overlay__fullscreen-icon"
+          draggable={false}
+        />
+      </button>
 
       {ghostSrc ? (
         <div
