@@ -3,8 +3,9 @@ import { uiAssets } from '../assets/uiAssets.js'
 import { formatMoney } from '../utils/formatMoney.js'
 
 /**
- * Bottom chrome matching product mockup:
- * Balance · Crazy Combo · Clear · chips · x2 · Total Bet · menu
+ * Bottom chrome:
+ * Desktop — Balance · Crazy Combo · Clear · chips · x2 · Total Bet · menu
+ * Portrait — chip tray above; Balance | Crazy Combo | Total Bet below
  */
 export function BettingFooter({
   disabled = false,
@@ -17,6 +18,7 @@ export function BettingFooter({
   onDouble,
   balance = 5100,
   totalBet = 0,
+  hideMenu = false,
 }) {
   return (
     <footer className="betting-footer">
@@ -59,58 +61,60 @@ export function BettingFooter({
         </button>
       </div>
 
-      <button
-        type="button"
-        className="betting-footer__round"
-        style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-        disabled={disabled || !onClear}
-        onClick={onClear}
-      >
-        CLEAR
-      </button>
+      <div className="betting-footer__tray">
+        <button
+          type="button"
+          className="betting-footer__round"
+          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
+          disabled={disabled || !onClear}
+          onClick={onClear}
+        >
+          CLEAR
+        </button>
 
-      <div className="betting-footer__chips" role="group" aria-label="Chips">
-        {CHIP_VALUES.map((value) => {
-          const src = uiAssets.chips[value]
-          const selected = selectedChip === value
-          return (
-            <button
-              key={value}
-              type="button"
-              className={`betting-footer__chip${selected ? ' is-selected' : ''}`}
-              disabled={disabled}
-              aria-pressed={selected}
-              onClick={() => onSelectChip(value)}
-              onPointerDown={(event) => {
-                if (disabled || event.button !== 0) return
-                onSelectChip(value)
-                onChipDragStart?.(event, value)
-              }}
-            >
-              {selected ? (
-                <img
-                  src={uiAssets.chipHighlighter}
-                  alt=""
-                  className="betting-footer__chip-glow"
-                  draggable={false}
-                />
-              ) : null}
-              {src ? <img src={src} alt="" draggable={false} /> : null}
-              <span>{value}</span>
-            </button>
-          )
-        })}
+        <div className="betting-footer__chips" role="group" aria-label="Chips">
+          {CHIP_VALUES.map((value) => {
+            const src = uiAssets.chips[value]
+            const selected = selectedChip === value
+            return (
+              <button
+                key={value}
+                type="button"
+                className={`betting-footer__chip${selected ? ' is-selected' : ''}`}
+                disabled={disabled}
+                aria-pressed={selected}
+                onClick={() => onSelectChip(value)}
+                onPointerDown={(event) => {
+                  if (disabled || event.button !== 0) return
+                  onSelectChip(value)
+                  onChipDragStart?.(event, value)
+                }}
+              >
+                {selected ? (
+                  <img
+                    src={uiAssets.chipHighlighter}
+                    alt=""
+                    className="betting-footer__chip-glow"
+                    draggable={false}
+                  />
+                ) : null}
+                {src ? <img src={src} alt="" draggable={false} /> : null}
+                <span>{value}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <button
+          type="button"
+          className="betting-footer__round"
+          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
+          disabled={disabled || !onDouble}
+          onClick={onDouble}
+        >
+          x2
+        </button>
       </div>
-
-      <button
-        type="button"
-        className="betting-footer__round"
-        style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-        disabled={disabled || !onDouble}
-        onClick={onDouble}
-      >
-        x2
-      </button>
 
       <div className="betting-footer__total-wrap">
         <span className="betting-footer__caption">TOTAL BET:</span>
@@ -122,15 +126,17 @@ export function BettingFooter({
         </div>
       </div>
 
-      <button
-        type="button"
-        className="betting-footer__menu"
-        style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-        aria-label="Menu"
-        disabled={disabled}
-      >
-        <span className="betting-footer__menu-icon" aria-hidden="true" />
-      </button>
+      {hideMenu ? null : (
+        <button
+          type="button"
+          className="betting-footer__menu"
+          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
+          aria-label="Menu"
+          disabled={disabled}
+        >
+          <span className="betting-footer__menu-icon" aria-hidden="true" />
+        </button>
+      )}
     </footer>
   )
 }

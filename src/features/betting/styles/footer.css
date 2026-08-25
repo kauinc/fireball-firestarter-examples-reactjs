@@ -10,6 +10,11 @@
   padding-top: calc(2px * var(--hud-scale));
 }
 
+/* Tray children join the desktop row (CLEAR · chips · x2) */
+.betting-footer__tray {
+  display: contents;
+}
+
 .betting-footer__caption {
   display: block;
   margin-bottom: calc(2px * var(--hud-scale));
