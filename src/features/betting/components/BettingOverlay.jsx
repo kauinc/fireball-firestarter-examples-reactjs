@@ -7,37 +7,44 @@ import { useCurrentRound } from '../hooks/useCurrentRound.js'
 import { useBettingOverlayState } from '../hooks/useBettingOverlayState.js'
 import { useChipBets } from '../hooks/useChipBets.js'
 import { useChipDrag } from '../hooks/useChipDrag.js'
-import { useHudScale } from '../hooks/useHudScale.js'
+import { useHudViewport } from '../hooks/useHudScale.js'
 import { useFullscreen } from '../hooks/useFullscreen.js'
 import { uiAssets } from '../assets/uiAssets.js'
 import { positionsUpTo } from '../constants/positions.js'
-import { RoundState } from '../../../domain/round/index.js'
 import '../../loading/styles/fonts.css'
 import '../styles/betting.css'
 
 /**
  * Betting HUD driven by Supabase `rounds.status` (Realtime).
  * Visible only while status === BETTING_OPEN.
+ *
+ * Mobile (compact): portrait / landscape layouts match product refs.
+ * Advanced Menu toggles HISTORY (landscape) + Hats/Glasses/Positions.
+ * Portrait HISTORY stays behind the top menu only.
  */
 export function BettingOverlay() {
-  const viewportScale = useHudScale()
+  const { scale: viewportScale, compact, orientation } = useHudViewport()
   const { round, status } = useCurrentRound()
   const { phase, secondsLeft, bannerLabel, isBettingUiVisible, disabled } =
     useBettingOverlayState({ status, round })
 
-  const sessionKey =
-    status === RoundState.BETTING_OPEN && round?.id ? String(round.id) : null
+  // Keep bets for the whole round (race HUD reads the same placements).
+  const sessionKey = round?.id ? String(round.id) : null
 
   const [trackedSessionKey, setTrackedSessionKey] = useState(sessionKey)
   const [accessory, setAccessory] = useState(null)
   const [selectedChip, setSelectedChip] = useState(5)
+  // Desktop: mid-controls always visible; switch is Crazy Combo.
+  // Compact: Advanced Menu reveals mid; switch is also Crazy Combo (bars).
   const [crazyCombo, setCrazyCombo] = useState(false)
+  const [advancedMenu, setAdvancedMenu] = useState(true)
   const [selectedPositions, setSelectedPositions] = useState(['1st'])
   const [historyOpen, setHistoryOpen] = useState(false)
 
   const { bets, totalBet, placeBet, clearBets, doubleBets } = useChipBets(
     selectedPositions,
     sessionKey,
+    crazyCombo,
   )
   const { dragChip, startDrag, clearDrag, isDragPlacement } = useChipDrag({
     disabled,
@@ -50,6 +57,8 @@ export function BettingOverlay() {
     setAccessory(null)
     setSelectedPositions(['1st'])
     setHistoryOpen(false)
+    setAdvancedMenu(true)
+    setCrazyCombo(false)
   }
 
   function handlePlaceBet(target) {
@@ -70,16 +79,33 @@ export function BettingOverlay() {
   const ghostSrc =
     dragChip?.moved && dragChip ? uiAssets.chips[dragChip.value] : null
 
+  const showAdvancedChrome = compact ? advancedMenu || crazyCombo : true
+
   return (
     <div
       className="betting-overlay"
       data-phase={phase}
+      data-compact={compact ? 'true' : undefined}
+      data-orient={orientation}
+      data-advanced={showAdvancedChrome ? 'true' : 'false'}
+      data-crazy={crazyCombo ? 'true' : 'false'}
       data-round-id={round?.id ?? undefined}
       data-round-number={round?.round_number ?? undefined}
       data-round-status={status ?? undefined}
       style={{ '--hud-scale': viewportScale }}
     >
       <BettingBanner label={bannerLabel} secondsLeft={secondsLeft} />
+
+      {compact ? (
+        <button
+          type="button"
+          className="betting-overlay__menu-top"
+          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
+          aria-label="Menu"
+        >
+          <span className="betting-footer__menu-icon" aria-hidden="true" />
+        </button>
+      ) : null}
 
       <div className="betting-overlay__bottom">
         <div className="betting-overlay__fade" aria-hidden="true" />
@@ -92,21 +118,24 @@ export function BettingOverlay() {
             onPlaceBet={handlePlaceBet}
           />
 
-          <MidControls
-            accessory={accessory}
-            onAccessoryChange={setAccessory}
-            selectedPositions={selectedPositions}
-            onSelectPosition={(pos) => {
-              if (disabled) return
-              const next = positionsUpTo(pos)
-              if (next) setSelectedPositions(next)
-            }}
-            disabled={disabled}
-            bets={accessoryBets}
-            onPlaceBet={handlePlaceBet}
-            historyOpen={historyOpen}
-            onHistoryOpenChange={setHistoryOpen}
-          />
+          {showAdvancedChrome ? (
+            <MidControls
+              accessory={accessory}
+              onAccessoryChange={setAccessory}
+              selectedPositions={selectedPositions}
+              onSelectPosition={(pos) => {
+                if (disabled) return
+                const next = positionsUpTo(pos)
+                if (next) setSelectedPositions(next)
+              }}
+              disabled={disabled}
+              bets={accessoryBets}
+              onPlaceBet={handlePlaceBet}
+              historyOpen={historyOpen}
+              onHistoryOpenChange={setHistoryOpen}
+              crazyCombo={crazyCombo}
+            />
+          ) : null}
 
           <BettingFooter
             disabled={disabled}
@@ -118,6 +147,7 @@ export function BettingOverlay() {
             onClear={clearBets}
             onDouble={doubleBets}
             totalBet={totalBet}
+            hideMenu={compact}
           />
         </div>
       </div>

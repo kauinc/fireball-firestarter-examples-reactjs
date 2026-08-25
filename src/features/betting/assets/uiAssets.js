@@ -1,4 +1,5 @@
 import textBar from '../../../assets/ui/text-description-bar.png'
+import crazyComboBar from '../../../assets/ui/crazy-combo-bar.png'
 import historyBar from '../../../assets/ui/history-bar.png'
 import balanceBar from '../../../assets/ui/balance-value-bar.png'
 import hatsGlassesBar from '../../../assets/ui/hats-glasses-bar.png'
@@ -22,12 +23,15 @@ import greenChip from '../../../assets/ui/chip-green.png'
 import chipHighlighter from '../../../assets/ui/chip-highlighter.png'
 import infoButton from '../../../assets/ui/info-button.png'
 import fullscreen from '../../../assets/ui/fullscreen.png'
+import darkenGradientDown from '../../../assets/ui/darken-gradient-down.png'
 
 export const uiAssets = Object.freeze({
   textBar,
+  crazyComboBar,
   historyBar,
   balanceBar,
   hatsGlassesBar,
+  darkenGradientDown,
   hatIcon,
   glassesIcon,
   allPositionBar,

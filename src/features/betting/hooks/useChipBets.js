@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CHIP_VALUES } from '../constants/doofs.js'
+import { publishRoundBets } from '../state/roundBetsStore.js'
 import { betTargetKey } from '../utils/betTargets.js'
 
 let betSeq = 0
@@ -44,7 +45,11 @@ export function consolidateChips(chips) {
  * Local chip placements. Same denomination stacks, then consolidates
  * into higher chips when exact combinations are possible.
  */
-export function useChipBets(selectedPositions, roundId = null) {
+export function useChipBets(
+  selectedPositions,
+  roundId = null,
+  crazyCombo = false,
+) {
   const [bets, setBets] = useState([])
   const [trackedRoundId, setTrackedRoundId] = useState(roundId)
 
@@ -57,6 +62,10 @@ export function useChipBets(selectedPositions, roundId = null) {
     () => roundMoney(bets.reduce((sum, bet) => sum + stackTotal(bet.chips), 0)),
     [bets],
   )
+
+  useEffect(() => {
+    publishRoundBets(roundId, bets, { crazyCombo })
+  }, [roundId, bets, crazyCombo])
 
   const placeBet = useCallback(
     (amount, target) => {
