@@ -1,0 +1,9 @@
+/**
+ * Shared HUD sheets used by betting / race / settlement boards.
+ * (No crazy-combos, no betting-only mobile.)
+ */
+@import './overlay.css';
+@import './doof-grid.css';
+@import './mid-controls.css';
+@import './footer.css';
+@import './hud-board-mobile.css';

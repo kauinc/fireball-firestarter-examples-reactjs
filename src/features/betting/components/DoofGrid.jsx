@@ -40,12 +40,21 @@ export function DoofGrid({
   bets = [],
   onPlaceBet,
   labelBets = [],
+  settleByBetId = null,
+  hideSettledChips = false,
 }) {
   const playableRef = useRef(null)
 
   const fieldBets = bets.filter(
     (bet) => bet.target.type === 'doof' || bet.target.type === 'split',
   )
+
+  function settleClass(betId) {
+    const outcome = settleByBetId?.[betId]
+    if (!outcome) return ''
+    const hidden = hideSettledChips ? ' is-settle-gone' : ''
+    return ` is-settle-${outcome}${hidden}`
+  }
 
   function placeFromFieldPointer(clientX, clientY) {
     if (disabled || !onPlaceBet || !playableRef.current) {
@@ -93,7 +102,8 @@ export function DoofGrid({
               </ChipLabel>
               {stack ? (
                 <span
-                  className="doof-grid__label-chip"
+                  className={`doof-grid__label-chip${settleClass(stack.id)}`}
+                  data-bet-id={stack.id}
                   onPointerUp={(event) => {
                     if (disabled || event.button !== 0) return
                     event.stopPropagation()
@@ -126,7 +136,8 @@ export function DoofGrid({
               </ChipLabel>
               {stack ? (
                 <span
-                  className="doof-grid__label-chip"
+                  className={`doof-grid__label-chip${settleClass(stack.id)}`}
+                  data-bet-id={stack.id}
                   onPointerUp={(event) => {
                     if (disabled || event.button !== 0) return
                     event.stopPropagation()
@@ -177,7 +188,8 @@ export function DoofGrid({
               return (
                 <span
                   key={bet.id}
-                  className="doof-grid__chip-anchor"
+                  className={`doof-grid__chip-anchor${settleClass(bet.id)}`}
+                  data-bet-id={bet.id}
                   style={fieldChipStyle(bet.target.anchor)}
                   onPointerUp={(event) => {
                     if (disabled || event.button !== 0) return

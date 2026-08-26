@@ -11,7 +11,7 @@ export const BettingPhase = Object.freeze({
 })
 
 /** Client-side betting window length while `rounds.status === BETTING_OPEN`. */
-export const BETTING_WINDOW_SECONDS = 10
+export const BETTING_WINDOW_SECONDS = 30
 
 export const BETTING_BANNER = Object.freeze({
   [BettingPhase.OPEN]: 'PLACE YOUR BETS',

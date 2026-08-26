@@ -1,0 +1,213 @@
+import { useEffect, useRef, useState } from 'react'
+import {
+  beginHistoryInsert,
+  cancelHistoryInsert,
+  finishHistoryInsert,
+  historyRowFromWinners,
+} from '../../betting/state/historyStore.js'
+
+const OPEN_MS = 320
+const FLY_MS = 1350
+const STAGGER_MS = 120
+const ROW_ANIM_MS = 700
+
+/**
+ * After settlement results are ready: open History (if needed), shift rows,
+ * fly podium icons into the new top row, drop the 11th row.
+ *
+ * @param {{
+ *   enabled: boolean,
+ *   roundId: string | null,
+ *   winners: ReadonlyArray<{ place: string, src?: string | null }>,
+ *   historyOpen: boolean,
+ *   onEnsureHistoryOpen: () => void,
+ *   readyForInsert: boolean,
+ *   podiumRef: React.RefObject<HTMLElement | null>,
+ *   historyPanelRef: React.RefObject<HTMLElement | null>,
+ * }} args
+ */
+export function useHistoryInsertAnimation({
+  enabled,
+  roundId,
+  winners,
+  historyOpen,
+  onEnsureHistoryOpen,
+  readyForInsert,
+  podiumRef,
+  historyPanelRef,
+}) {
+  const [flights, setFlights] = useState([])
+  const [landed, setLanded] = useState(false)
+  const timersRef = useRef([])
+  const rafsRef = useRef([])
+  const finishedForRef = useRef('')
+  const historyOpenRef = useRef(historyOpen)
+  historyOpenRef.current = historyOpen
+
+  function clearTimers() {
+    for (const id of timersRef.current) window.clearTimeout(id)
+    timersRef.current = []
+    for (const id of rafsRef.current) window.cancelAnimationFrame(id)
+    rafsRef.current = []
+  }
+
+  useEffect(() => {
+    if (!enabled || !roundId || !readyForInsert || !winners?.length) {
+      return undefined
+    }
+
+    const key = String(roundId)
+    if (finishedForRef.current === key) return undefined
+
+    let cancelled = false
+    let insertingId = null
+    let didFinish = false
+
+    clearTimers()
+    setFlights([])
+    setLanded(false)
+
+    const wasOpen = historyOpenRef.current
+    onEnsureHistoryOpen()
+
+    function startFlights(nextFlights) {
+      if (cancelled) return
+      setFlights(nextFlights)
+
+      const maxFly =
+        Math.max(0, ...nextFlights.map((f) => f.delayMs), 0) + FLY_MS
+
+      const landId = window.setTimeout(() => {
+        if (cancelled) return
+        setLanded(true)
+        setFlights([])
+      }, maxFly)
+
+      const doneId = window.setTimeout(() => {
+        if (cancelled) return
+        finishHistoryInsert()
+        finishedForRef.current = key
+        didFinish = true
+      }, Math.max(ROW_ANIM_MS, maxFly) + 120)
+
+      timersRef.current.push(landId, doneId)
+    }
+
+    const startId = window.setTimeout(() => {
+      if (cancelled) return
+
+      const row = historyRowFromWinners(key, winners)
+      const began = beginHistoryInsert(row)
+      insertingId = row.id
+
+      if (began.alreadyPresent && !began.exitingId) {
+        setLanded(true)
+        finishedForRef.current = key
+        didFinish = true
+        return
+      }
+
+      const measureDelay = wasOpen ? 120 : OPEN_MS
+      const flyId = window.setTimeout(() => {
+        if (cancelled) return
+
+        function tryMeasure(attemptsLeft) {
+          if (cancelled) return
+          const nextFlights = buildHistoryFlights({
+            rowId: row.id,
+            winners,
+            podiumEl: podiumRef.current,
+            panelEl: historyPanelRef.current,
+          })
+          if (nextFlights.length > 0 || attemptsLeft <= 0) {
+            startFlights(nextFlights)
+            return
+          }
+          const rafId = window.requestAnimationFrame(() => {
+            tryMeasure(attemptsLeft - 1)
+          })
+          rafsRef.current.push(rafId)
+        }
+
+        tryMeasure(10)
+      }, measureDelay)
+
+      timersRef.current.push(flyId)
+    }, 40)
+
+    timersRef.current.push(startId)
+
+    return () => {
+      cancelled = true
+      clearTimers()
+      if (!didFinish && insertingId) {
+        cancelHistoryInsert(insertingId)
+      }
+    }
+    // historyOpen omitted — opening History must not cancel timers.
+  }, [
+    enabled,
+    roundId,
+    winners,
+    readyForInsert,
+    onEnsureHistoryOpen,
+    podiumRef,
+    historyPanelRef,
+  ])
+
+  useEffect(() => {
+    if (!enabled) {
+      finishedForRef.current = ''
+      setFlights([])
+      setLanded(false)
+    }
+  }, [enabled])
+
+  return {
+    historyFlights: flights,
+    historyLanded: landed,
+  }
+}
+
+function buildHistoryFlights({ rowId, winners, podiumEl, panelEl }) {
+  if (!podiumEl || !panelEl) return []
+
+  const flights = []
+  let index = 0
+  const order = ['1st', '2nd', '3rd']
+
+  for (const place of order) {
+    const winner = winners.find((w) => w.place === place)
+    if (!winner?.src) continue
+
+    const fromNode = podiumEl.querySelector(`[data-podium-icon="${place}"]`)
+    const toNode = panelEl.querySelector(
+      `[data-history-cell="${rowId}:${place}"]`,
+    )
+    if (!fromNode || !toNode) continue
+
+    const fromRect = fromNode.getBoundingClientRect()
+    const toRect = toNode.getBoundingClientRect()
+    if (fromRect.width <= 0 || toRect.width <= 0) continue
+
+    flights.push({
+      id: `hist-${rowId}-${place}`,
+      outcome: 'history',
+      src: winner.src,
+      from: {
+        x: fromRect.left + fromRect.width / 2,
+        y: fromRect.top + fromRect.height / 2,
+      },
+      to: {
+        x: toRect.left + toRect.width / 2,
+        y: toRect.top + toRect.height / 2,
+      },
+      delayMs: index * STAGGER_MS,
+      durationMs: FLY_MS,
+      size: Math.max(fromRect.width, 36),
+    })
+    index += 1
+  }
+
+  return flights
+}

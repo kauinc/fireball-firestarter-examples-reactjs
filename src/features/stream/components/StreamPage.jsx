@@ -6,6 +6,7 @@ import {
 } from '@livekit/components-react'
 import { BettingOverlay } from '../../betting/index.js'
 import { RaceOverlay } from '../../race/index.js'
+import { SettlementOverlay } from '../../settlement/index.js'
 import { LoadingScreen, LoadingStatus } from '../../loading/index.js'
 import { StreamViewport } from './StreamViewport.jsx'
 import { useViewerSession } from '../hooks/useViewerSession.js'
@@ -110,9 +111,10 @@ export function StreamPage() {
         <StreamAudio />
       </LiveKitRoom>
 
-      {/* Overlays follow rounds.status Realtime (betting / race). */}
+      {/* Overlays follow rounds.status Realtime (betting / race / settlement). */}
       <BettingOverlay key="betting-round" />
       <RaceOverlay key="race-round" />
+      <SettlementOverlay key="settlement-round" />
     </div>
   )
 }

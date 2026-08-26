@@ -8,7 +8,7 @@ import {
 import { uiAssets } from '../assets/uiAssets.js'
 import { accessoryTarget } from '../utils/betTargets.js'
 import { ChipStack } from './ChipStack.jsx'
-import { HistoryPanel } from './HistoryPanel.jsx'
+import { HistoryControl } from './HistoryControl.jsx'
 import { CrazyCombos } from './CrazyCombos.jsx'
 
 /**
@@ -35,27 +35,7 @@ export function MidControls({
   return (
     <div className={`mid-controls-stack${crazyCombo ? ' is-crazy' : ''}`}>
       <div className="mid-controls">
-        <div
-          className={`mid-controls__history-slot${historyOpen ? ' is-open' : ''}`}
-        >
-          <button
-            type="button"
-            className={`mid-controls__history${historyOpen ? ' is-open' : ''}`}
-            style={{ backgroundImage: `url(${uiAssets.hatsGlassesBar})` }}
-            aria-expanded={historyOpen}
-            onClick={() => onHistoryOpenChange?.(!historyOpen)}
-          >
-            <span className="mid-controls__history-handle" aria-hidden="true">
-              <img
-                src={uiAssets.scrollPositionThumb}
-                alt=""
-                draggable={false}
-              />
-            </span>
-            HISTORY
-          </button>
-          <HistoryPanel open={historyOpen} />
-        </div>
+        <HistoryControl open={historyOpen} onOpenChange={onHistoryOpenChange} />
 
         <div className="mid-controls__accessories">
           {DOOF_ACCESSORIES.map((item) => {

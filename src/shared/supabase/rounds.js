@@ -94,9 +94,10 @@ function ensureRoundsRealtime() {
  * Realtime INSERT/UPDATE on `public.rounds` (shared channel, no poll).
  * Safe to call from multiple hooks — listeners are multiplexed.
  *
- * Why shared: BettingOverlay + RaceOverlay both use `useCurrentRound()`. Two
- * `supabase.channel(rounds_realtime_${Date.now()})` calls in the same ms reuse
- * one channel; the second `.on()` after `.subscribe()` throws.
+ * Why shared: BettingOverlay + RaceOverlay + SettlementOverlay all use
+ * `useCurrentRound()`. Two `supabase.channel(...)` calls in the same ms reuse
+ * one channel; the second `.on()` after `.subscribe()` throws. The hook also
+ * multiplexes via a shared store so only one fetch/subscription runs.
  *
  * @param {(payload: { eventType: string, new: Record<string, unknown> | null }) => void} onChange
  * @param {(status: string, error: Error | null) => void} [onStatus]

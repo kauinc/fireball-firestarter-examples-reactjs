@@ -3,6 +3,7 @@ import { BettingBanner } from './BettingBanner.jsx'
 import { DoofGrid } from './DoofGrid.jsx'
 import { MidControls } from './MidControls.jsx'
 import { BettingFooter } from './BettingFooter.jsx'
+import { HistoryPanel } from './HistoryPanel.jsx'
 import { useCurrentRound } from '../hooks/useCurrentRound.js'
 import { useBettingOverlayState } from '../hooks/useBettingOverlayState.js'
 import { useChipBets } from '../hooks/useChipBets.js'
@@ -19,8 +20,7 @@ import '../styles/betting.css'
  * Visible only while status === BETTING_OPEN.
  *
  * Mobile (compact): portrait / landscape layouts match product refs.
- * Advanced Menu toggles HISTORY (landscape) + Hats/Glasses/Positions.
- * Portrait HISTORY stays behind the top menu only.
+ * Advanced Menu toggles HISTORY (landscape left / portrait top table) + Hats/Glasses/Positions.
  */
 export function BettingOverlay() {
   const { scale: viewportScale, compact, orientation } = useHudViewport()
@@ -35,9 +35,9 @@ export function BettingOverlay() {
   const [accessory, setAccessory] = useState(null)
   const [selectedChip, setSelectedChip] = useState(5)
   // Desktop: mid-controls always visible; switch is Crazy Combo.
-  // Compact: Advanced Menu reveals mid; switch is also Crazy Combo (bars).
+  // Compact: Advanced Menu reveals mid + portrait history table; switch also Crazy Combo bars.
   const [crazyCombo, setCrazyCombo] = useState(false)
-  const [advancedMenu, setAdvancedMenu] = useState(true)
+  const [advancedMenu, setAdvancedMenu] = useState(false)
   const [selectedPositions, setSelectedPositions] = useState(['1st'])
   const [historyOpen, setHistoryOpen] = useState(false)
 
@@ -57,7 +57,7 @@ export function BettingOverlay() {
     setAccessory(null)
     setSelectedPositions(['1st'])
     setHistoryOpen(false)
-    setAdvancedMenu(true)
+    setAdvancedMenu(false)
     setCrazyCombo(false)
   }
 
@@ -80,6 +80,8 @@ export function BettingOverlay() {
     dragChip?.moved && dragChip ? uiAssets.chips[dragChip.value] : null
 
   const showAdvancedChrome = compact ? advancedMenu || crazyCombo : true
+  const showPortraitTopHistory =
+    compact && orientation === 'portrait' && advancedMenu
 
   return (
     <div
@@ -105,6 +107,19 @@ export function BettingOverlay() {
         >
           <span className="betting-footer__menu-icon" aria-hidden="true" />
         </button>
+      ) : null}
+
+      {showPortraitTopHistory ? (
+        <>
+          <div
+            className="hud-history-top__darken"
+            style={{ backgroundImage: `url(${uiAssets.darkenGradientDown})` }}
+            aria-hidden="true"
+          />
+          <div className="betting-overlay__history-top">
+            <HistoryPanel open />
+          </div>
+        </>
       ) : null}
 
       <div className="betting-overlay__bottom">
@@ -142,8 +157,21 @@ export function BettingOverlay() {
             selectedChip={selectedChip}
             onSelectChip={setSelectedChip}
             onChipDragStart={startDrag}
-            crazyCombo={crazyCombo}
-            onToggleCrazyCombo={() => setCrazyCombo((v) => !v)}
+            crazyCombo={compact ? advancedMenu : crazyCombo}
+            onToggleCrazyCombo={() => {
+              if (compact) {
+                setAdvancedMenu((v) => {
+                  const next = !v
+                  setCrazyCombo(next)
+                  if (!next) setHistoryOpen(false)
+                  else if (orientation === 'landscape') setHistoryOpen(true)
+                  return next
+                })
+                return
+              }
+              setCrazyCombo((v) => !v)
+            }}
+            switchLabel={compact ? 'ADVANCED MENU' : 'CRAZY COMBO'}
             onClear={clearBets}
             onDouble={doubleBets}
             totalBet={totalBet}

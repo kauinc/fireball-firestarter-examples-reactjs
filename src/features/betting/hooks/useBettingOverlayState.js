@@ -8,9 +8,7 @@ import { RoundState } from '../../../domain/round/index.js'
 
 /**
  * Overlay UI from round `status` only (no timestamp inference).
- *
- * Prototype: only BETTING_OPEN shows the betting overlay.
- * Race / settlement overlays come later.
+ * Visible while `status === BETTING_OPEN` (client countdown for PLACE/NO MORE BETS).
  *
  * @param {{
  *   status: string | null,

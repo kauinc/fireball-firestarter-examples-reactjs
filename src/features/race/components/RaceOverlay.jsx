@@ -12,16 +12,11 @@ import {
   useRaceOverlayState,
 } from '../hooks/useRaceOverlay.js'
 import { CurrentBetsBoard } from './CurrentBetsSheet.jsx'
+import { DEFAULT_BALANCE } from '../../betting/constants/defaults.js'
 import '../../loading/styles/fonts.css'
-import '../../betting/styles/overlay.css'
-import '../../betting/styles/footer.css'
-import '../../betting/styles/doof-grid.css'
-import '../../betting/styles/mid-controls.css'
+import '../../betting/styles/hud-shared.css'
 import '../../betting/styles/crazy-combos.css'
-import '../../betting/styles/mobile.css'
 import '../styles/race.css'
-
-const DEFAULT_BALANCE = 5100
 
 /**
  * In-race HUD — same mobile portrait / landscape chrome as BettingOverlay:

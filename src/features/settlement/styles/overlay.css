@@ -1,0 +1,39 @@
+﻿/**
+ * Settlement overlay shell — RESULTS_SENT.
+ * Reuses betting overlay bottom HUD geometry.
+ */
+
+.settlement-overlay {
+  --bet-text: #ffffff;
+  --hud-scale: 1;
+  --hud-w: calc(980px * var(--hud-scale));
+  --history-w: calc(230px * var(--hud-scale));
+  --history-col-shift: calc(-53px * var(--hud-scale));
+  --pattern-label-x: 8px;
+
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  overflow: hidden;
+  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
+  color: var(--bet-text);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.settlement-overlay > * {
+  pointer-events: auto;
+}
+
+.settlement-overlay .betting-overlay__bottom {
+  z-index: 7;
+}
+
+.settlement-overlay .betting-overlay__fullscreen {
+  z-index: 8;
+}
+
+.settlement-overlay .betting-overlay__menu-top {
+  z-index: 9;
+}

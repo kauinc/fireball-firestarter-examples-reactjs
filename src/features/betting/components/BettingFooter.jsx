@@ -19,6 +19,7 @@ export function BettingFooter({
   balance = 5100,
   totalBet = 0,
   hideMenu = false,
+  switchLabel = 'CRAZY COMBO',
 }) {
   return (
     <footer className="betting-footer">
@@ -33,12 +34,13 @@ export function BettingFooter({
       </div>
 
       <div className="betting-footer__combo-wrap">
-        <span className="betting-footer__caption">CRAZY COMBO</span>
+        <span className="betting-footer__caption">{switchLabel}</span>
         <button
           type="button"
           className={`betting-footer__combo${crazyCombo ? ' is-on' : ''}`}
           disabled={disabled}
           aria-pressed={crazyCombo}
+          aria-label={switchLabel}
           onClick={onToggleCrazyCombo}
         >
           <span
