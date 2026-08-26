@@ -56,7 +56,7 @@ export function useSettlementOverlayState({
     }
 
     // Drop latch if Supabase already moved to a newer round id.
-    if (roundId && latchedRoundId && roundId !== latchedRoundId) {
+    if (roundId && roundId !== latchedRoundId) {
       const clearId = window.setTimeout(() => {
         setLatchedRoundId(null)
         setLatchUntil(0)
