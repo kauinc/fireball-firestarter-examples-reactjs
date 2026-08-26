@@ -14,7 +14,11 @@ import { useChipSettleAnimation } from '../hooks/useChipSettleAnimation.js'
 import { useHistoryInsertAnimation } from '../hooks/useHistoryInsertAnimation.js'
 import { sumBetTotal } from '../../betting/utils/betTotals.js'
 import { DEFAULT_BALANCE } from '../../betting/constants/defaults.js'
-import '../../loading/styles/fonts.css'
+import {
+  HudFade,
+  HudFullscreenButton,
+  HudMenuChrome,
+} from '../../hud/index.js'
 import '../../betting/styles/hud-shared.css'
 import '../styles/settlement.css'
 
@@ -41,11 +45,12 @@ export function SettlementOverlay({ balance = DEFAULT_BALANCE }) {
   const hasBets = visibleBets.length > 0
   const showPortraitTopHistory = compact && orientation === 'portrait'
 
-  const { isSettlementUiVisible, settlement } = useSettlementOverlayState({
-    status,
-    round,
-    bets: visibleBets,
-  })
+  const { isSettlementUiVisible, settlement, settlementRoundId } =
+    useSettlementOverlayState({
+      status,
+      round,
+      bets: visibleBets,
+    })
 
   const settleByBetId = useMemo(() => {
     const byId = settlement?.outcomes?.byId
@@ -80,7 +85,7 @@ export function SettlementOverlay({ balance = DEFAULT_BALANCE }) {
 
   const { historyFlights, historyLanded } = useHistoryInsertAnimation({
     enabled: Boolean(isSettlementUiVisible && settlement),
-    roundId: round?.id != null ? String(round.id) : null,
+    roundId: settlementRoundId,
     winners: settlement?.winners ?? [],
     historyOpen: showPortraitTopHistory || historyOpen,
     onEnsureHistoryOpen: ensureHistoryOpen,
@@ -114,24 +119,11 @@ export function SettlementOverlay({ balance = DEFAULT_BALANCE }) {
       />
       <SettlementFlightLayer flights={allFlights} />
 
-      {compact ? (
-        <button
-          type="button"
-          className="betting-overlay__menu-top"
-          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-          aria-label="Menu"
-        >
-          <span className="betting-footer__menu-icon" aria-hidden="true" />
-        </button>
-      ) : null}
+      {compact ? <HudMenuChrome placement="top" /> : null}
 
       {showPortraitTopHistory ? (
         <>
-          <div
-            className="hud-history-top__darken"
-            style={{ backgroundImage: `url(${uiAssets.darkenGradientDown})` }}
-            aria-hidden="true"
-          />
+          <div className="hud-history-top__darken" aria-hidden="true" />
           <div className="betting-overlay__history-top">
             <HistoryPanel
               open
@@ -143,7 +135,7 @@ export function SettlementOverlay({ balance = DEFAULT_BALANCE }) {
       ) : null}
 
       <div className="betting-overlay__bottom">
-        <div className="betting-overlay__fade" aria-hidden="true" />
+        <HudFade />
 
         <div className="betting-overlay__hud">
           <SettlementBoard
@@ -190,34 +182,15 @@ export function SettlementOverlay({ balance = DEFAULT_BALANCE }) {
               </div>
             </div>
 
-            {compact ? null : (
-              <button
-                type="button"
-                className="betting-footer__menu"
-                style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-                aria-label="Menu"
-              >
-                <span className="betting-footer__menu-icon" aria-hidden="true" />
-              </button>
-            )}
+            {compact ? null : <HudMenuChrome placement="footer" />}
           </footer>
         </div>
       </div>
 
-      <button
-        type="button"
-        className={`betting-overlay__fullscreen${isFullscreen ? ' is-active' : ''}`}
-        aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
-        aria-pressed={isFullscreen}
-        onClick={toggleFullscreen}
-      >
-        <img
-          src={uiAssets.fullscreen}
-          alt=""
-          className="betting-overlay__fullscreen-icon"
-          draggable={false}
-        />
-      </button>
+      <HudFullscreenButton
+        isFullscreen={isFullscreen}
+        onToggle={toggleFullscreen}
+      />
     </div>
   )
 }

@@ -175,12 +175,22 @@ export function fieldChipStyle(anchor) {
 }
 
 /**
- * Resolve a chip drop from viewport coords.
+ * Resolve a chip drop from viewport coords, scoped to an optional HUD root.
  * Needed on touch: pointerup targets the chip that was pressed, not the
  * element under the finger — so field/label handlers never see the drop.
+ *
+ * @param {number} clientX
+ * @param {number} clientY
+ * @param {ParentNode | null} [root]
  */
-export function resolveDropAtPoint(clientX, clientY) {
-  const playable = document.querySelector('.doof-grid__playable')
+export function resolveDropAtPoint(clientX, clientY, root = null) {
+  const scope = root ?? document
+  const playable =
+    scope.querySelector?.('.doof-grid__playable') ??
+    (scope instanceof Element && scope.matches?.('.doof-grid__playable')
+      ? scope
+      : null)
+
   if (playable) {
     const rect = playable.getBoundingClientRect()
     if (
@@ -199,8 +209,11 @@ export function resolveDropAtPoint(clientX, clientY) {
   }
 
   const hit = document.elementFromPoint(clientX, clientY)
-  const node = hit?.closest?.('[data-bet-drop]')
+  if (!hit) return null
+  if (root instanceof Element && !root.contains(hit)) return null
+  const node = hit.closest?.('[data-bet-drop]')
   if (!node) return null
+  if (root instanceof Element && !root.contains(node)) return null
   try {
     return JSON.parse(node.getAttribute('data-bet-drop'))
   } catch {

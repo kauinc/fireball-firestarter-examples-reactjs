@@ -42,7 +42,34 @@ export function useHistoryInsertAnimation({
   const rafsRef = useRef([])
   const finishedForRef = useRef('')
   const historyOpenRef = useRef(historyOpen)
-  historyOpenRef.current = historyOpen
+  const winnersRef = useRef(winners)
+  const podiumRefStable = useRef(podiumRef)
+  const historyPanelRefStable = useRef(historyPanelRef)
+  const onEnsureHistoryOpenRef = useRef(onEnsureHistoryOpen)
+
+  useEffect(() => {
+    historyOpenRef.current = historyOpen
+  }, [historyOpen])
+
+  useEffect(() => {
+    winnersRef.current = winners
+  }, [winners])
+
+  useEffect(() => {
+    podiumRefStable.current = podiumRef
+  }, [podiumRef])
+
+  useEffect(() => {
+    historyPanelRefStable.current = historyPanelRef
+  }, [historyPanelRef])
+
+  useEffect(() => {
+    onEnsureHistoryOpenRef.current = onEnsureHistoryOpen
+  }, [onEnsureHistoryOpen])
+
+  const winnersKey = (winners ?? [])
+    .map((w) => `${w.place}:${w.src ?? ''}`)
+    .join('|')
 
   function clearTimers() {
     for (const id of timersRef.current) window.clearTimeout(id)
@@ -52,7 +79,7 @@ export function useHistoryInsertAnimation({
   }
 
   useEffect(() => {
-    if (!enabled || !roundId || !readyForInsert || !winners?.length) {
+    if (!enabled || !roundId || !readyForInsert || !winnersKey) {
       return undefined
     }
 
@@ -64,11 +91,15 @@ export function useHistoryInsertAnimation({
     let didFinish = false
 
     clearTimers()
-    setFlights([])
-    setLanded(false)
+    const prepId = window.setTimeout(() => {
+      if (cancelled) return
+      setFlights([])
+      setLanded(false)
+    }, 0)
+    timersRef.current.push(prepId)
 
     const wasOpen = historyOpenRef.current
-    onEnsureHistoryOpen()
+    onEnsureHistoryOpenRef.current?.()
 
     function startFlights(nextFlights) {
       if (cancelled) return
@@ -96,7 +127,7 @@ export function useHistoryInsertAnimation({
     const startId = window.setTimeout(() => {
       if (cancelled) return
 
-      const row = historyRowFromWinners(key, winners)
+      const row = historyRowFromWinners(key, winnersRef.current)
       const began = beginHistoryInsert(row)
       insertingId = row.id
 
@@ -115,9 +146,9 @@ export function useHistoryInsertAnimation({
           if (cancelled) return
           const nextFlights = buildHistoryFlights({
             rowId: row.id,
-            winners,
-            podiumEl: podiumRef.current,
-            panelEl: historyPanelRef.current,
+            winners: winnersRef.current,
+            podiumEl: podiumRefStable.current?.current ?? null,
+            panelEl: historyPanelRefStable.current?.current ?? null,
           })
           if (nextFlights.length > 0 || attemptsLeft <= 0) {
             startFlights(nextFlights)
@@ -144,23 +175,18 @@ export function useHistoryInsertAnimation({
         cancelHistoryInsert(insertingId)
       }
     }
-    // historyOpen omitted — opening History must not cancel timers.
-  }, [
-    enabled,
-    roundId,
-    winners,
-    readyForInsert,
-    onEnsureHistoryOpen,
-    podiumRef,
-    historyPanelRef,
-  ])
+  }, [enabled, roundId, winnersKey, readyForInsert])
 
   useEffect(() => {
     if (!enabled) {
       finishedForRef.current = ''
-      setFlights([])
-      setLanded(false)
+      const resetId = window.setTimeout(() => {
+        setFlights([])
+        setLanded(false)
+      }, 0)
+      return () => window.clearTimeout(resetId)
     }
+    return undefined
   }, [enabled])
 
   return {

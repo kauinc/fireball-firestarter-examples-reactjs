@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { BettingBanner } from '../../betting/components/BettingBanner.jsx'
 import { uiAssets } from '../../betting/assets/uiAssets.js'
 import { formatMoney } from '../../betting/utils/formatMoney.js'
@@ -13,7 +13,12 @@ import {
 } from '../hooks/useRaceOverlay.js'
 import { CurrentBetsBoard } from './CurrentBetsSheet.jsx'
 import { DEFAULT_BALANCE } from '../../betting/constants/defaults.js'
-import '../../loading/styles/fonts.css'
+import {
+  HudFade,
+  HudFullscreenButton,
+  HudMenuChrome,
+  useDialogFocus,
+} from '../../hud/index.js'
 import '../../betting/styles/hud-shared.css'
 import '../../betting/styles/crazy-combos.css'
 import '../styles/race.css'
@@ -39,7 +44,19 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
   const { roundId: betsRoundId, bets, crazyCombo: publishedCrazyCombo } =
     usePublishedRoundBets()
   const [betsOpenForKey, setBetsOpenForKey] = useState(null)
+  // Close CURRENT BETS when the race key changes (new round / phase).
+  if (betsOpenForKey != null && betsOpenForKey !== raceKey) {
+    setBetsOpenForKey(null)
+  }
   const betsOpen = Boolean(isRaceUiVisible && betsOpenForKey === raceKey)
+  const betsDialogRef = useRef(null)
+
+  const closeBets = useCallback(() => setBetsOpenForKey(null), [])
+  useDialogFocus({
+    open: betsOpen,
+    onClose: closeBets,
+    containerRef: betsDialogRef,
+  })
 
   const visibleBets =
     round?.id != null && String(round.id) === String(betsRoundId ?? '')
@@ -57,11 +74,11 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
   useEffect(() => {
     if (!betsOpen) return undefined
     function onKeyDown(event) {
-      if (event.key === 'Escape') setBetsOpenForKey(null)
+      if (event.key === 'Escape') closeBets()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [betsOpen])
+  }, [betsOpen, closeBets])
 
   if (!isRaceUiVisible) {
     return null
@@ -74,6 +91,7 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
       style={{ backgroundImage: `url(${uiAssets.hatsGlassesBar})` }}
       aria-label="Current bets"
       aria-expanded={betsOpen}
+      aria-controls="race-current-bets-dialog"
       onClick={() => setBetsOpenForKey(betsOpen ? null : raceKey)}
     >
       <span className="race-overlay__current-bets-handle" aria-hidden="true">
@@ -94,34 +112,29 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
     >
       <BettingBanner secondsLeft={elapsedLabel} />
 
-      {compact ? (
-        <button
-          type="button"
-          className="betting-overlay__menu-top"
-          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-          aria-label="Menu"
-        >
-          <span className="betting-footer__menu-icon" aria-hidden="true" />
-        </button>
-      ) : null}
+      {compact ? <HudMenuChrome placement="top" /> : null}
 
       {betsOpen ? (
         <button
           type="button"
           className="race-bets-sheet__darken"
-          style={{ backgroundImage: `url(${uiAssets.darkenGradientDown})` }}
           aria-label="Close current bets"
-          onClick={() => setBetsOpenForKey(null)}
+          onClick={closeBets}
         />
       ) : null}
 
       <div className="betting-overlay__bottom">
+        {!betsOpen ? <HudFade /> : null}
         <div className="betting-overlay__hud">
           {betsOpen ? (
             <div
+              id="race-current-bets-dialog"
+              ref={betsDialogRef}
               className="race-bets-sheet__panel"
               role="dialog"
+              aria-modal="true"
               aria-label="Current bets"
+              tabIndex={-1}
             >
               <CurrentBetsBoard
                 bets={visibleBets}
@@ -158,34 +171,15 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
               </div>
             </div>
 
-            {compact ? null : (
-              <button
-                type="button"
-                className="betting-footer__menu"
-                style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-                aria-label="Menu"
-              >
-                <span className="betting-footer__menu-icon" aria-hidden="true" />
-              </button>
-            )}
+            {compact ? null : <HudMenuChrome placement="footer" />}
           </footer>
         </div>
       </div>
 
-      <button
-        type="button"
-        className={`betting-overlay__fullscreen${isFullscreen ? ' is-active' : ''}`}
-        aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
-        aria-pressed={isFullscreen}
-        onClick={toggleFullscreen}
-      >
-        <img
-          src={uiAssets.fullscreen}
-          alt=""
-          className="betting-overlay__fullscreen-icon"
-          draggable={false}
-        />
-      </button>
+      <HudFullscreenButton
+        isFullscreen={isFullscreen}
+        onToggle={toggleFullscreen}
+      />
     </div>
   )
 }

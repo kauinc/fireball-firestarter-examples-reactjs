@@ -21,6 +21,8 @@ let snapshot = SERVER_SNAPSHOT
 const listeners = new Set()
 let started = false
 let stopRealtime = null
+/** Monotonic generation so stale `loadLatest` responses cannot overwrite newer state. */
+let fetchGeneration = 0
 
 function emit(next) {
   snapshot = Object.freeze(next)
@@ -29,18 +31,28 @@ function emit(next) {
 
 function applyRound(data) {
   const prev = snapshot.round
-  const round = shouldApplyRound(data, prev) ? data : prev
+  if (!shouldApplyRound(data, prev)) {
+    emit({
+      ...snapshot,
+      ready: true,
+      error: null,
+    })
+    return
+  }
   emit({
     ...snapshot,
-    round,
-    status: typeof round?.status === 'string' ? round.status : null,
+    round: data,
+    status: typeof data?.status === 'string' ? data.status : null,
     ready: true,
     error: null,
   })
 }
 
 async function loadLatest() {
+  const generation = ++fetchGeneration
   const { data, error: queryError } = await fetchLatestRound()
+  if (generation !== fetchGeneration) return
+
   if (queryError) {
     console.error('[rounds] fetch failed', queryError.message)
     emit({

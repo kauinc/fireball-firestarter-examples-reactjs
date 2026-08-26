@@ -46,21 +46,26 @@
 .settlement-flights {
   position: absolute;
   inset: 0;
-  z-index: 20;
+  z-index: var(--z-flights, 30);
   pointer-events: none;
   overflow: visible;
 }
 
 .settlement-flight {
   position: fixed;
-  z-index: 21;
+  z-index: var(--z-flights, 30);
   display: grid;
   place-items: center;
   margin: 0;
   padding: 0;
   transform: translate(-50%, -50%);
-  will-change: transform, opacity;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
+}
+
+.settlement-flight--win,
+.settlement-flight--lose,
+.settlement-flight--history {
+  will-change: transform, opacity;
 }
 
 .settlement-flight img {
@@ -152,7 +157,7 @@
     cubic-bezier(0.22, 0.9, 0.28, 1) both;
   animation-delay: var(--flight-delay, 0ms);
   pointer-events: none;
-  z-index: 46;
+  z-index: var(--z-flights, 30);
 }
 
 @keyframes settle-fly-history {
@@ -166,7 +171,7 @@
         calc(-50% + var(--flight-dy))
       )
       scale(0.55);
-    opacity: 0.95;
+    opacity: 1;
   }
 }
 

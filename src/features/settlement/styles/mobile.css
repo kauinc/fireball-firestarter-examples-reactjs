@@ -1,71 +1,10 @@
 ﻿/**
  * Settlement overlay mobile — portrait / compact.
+ * Shared compact shell lives in hud-compact.css.
  */
-/* —— Settlement compact —— */
-.settlement-overlay[data-compact='true'] {
-  --history-col-shift: 0px;
-  --pattern-label-x: 4px;
-}
-
-.settlement-overlay[data-compact='true'] .betting-overlay__bottom {
-  padding-left: max(8px, env(safe-area-inset-left, 0px));
-  padding-right: max(8px, env(safe-area-inset-right, 0px));
-  padding-bottom: max(
-    calc(8px * var(--hud-scale)),
-    env(safe-area-inset-bottom, 0px)
-  );
-  overflow: visible;
-}
-
-.settlement-overlay[data-compact='true'] .betting-overlay__hud {
-  width: min(var(--hud-w), 100%);
-  max-width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-.settlement-overlay[data-compact='true'] .betting-overlay__menu-top {
-  display: grid;
-}
-
-.settlement-overlay[data-compact='true'] .betting-footer__menu {
-  display: none;
-}
-
-.settlement-overlay[data-compact='true'] .betting-overlay__fullscreen {
-  top: max(10px, env(safe-area-inset-top, 0px));
-  left: max(10px, env(safe-area-inset-left, 0px));
-  right: auto;
-  bottom: auto;
-  width: calc(40px * var(--hud-scale));
-  height: calc(40px * var(--hud-scale));
-  z-index: 9;
-}
-
-.settlement-overlay[data-compact='true'] .doof-grid {
-  transform: none;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-.settlement-overlay[data-compact='true'] .mid-controls,
-.settlement-overlay[data-compact='true'] .mid-controls-stack {
-  width: 100%;
-  max-width: 100%;
-  transform: none;
-  padding-left: 0;
-  box-sizing: border-box;
-  min-width: 0;
-}
 
 .settlement-overlay[data-orient='portrait'] {
   --hud-w: calc(374px * var(--hud-scale));
-}
-
-.settlement-overlay[data-orient='portrait'] .betting-overlay__bottom {
-  align-items: flex-end;
 }
 
 .settlement-overlay[data-orient='portrait'] .betting-overlay__hud {
@@ -110,7 +49,7 @@
   );
   left: 50%;
   transform: translateX(-50%);
-  z-index: 8;
+  z-index: var(--z-overlay-sheet, 18);
   width: var(--history-sheet-w);
   pointer-events: none;
 }
@@ -190,10 +129,6 @@
   font-size: calc(20px * var(--hud-scale));
 }
 
-/*
- * Portrait stream is 16:9 letterboxed — sit podium labels just inside the
- * video frame (above 3D doof heads), not in the black bars above.
- */
 .settlement-overlay[data-orient='portrait'] .settlement-podium {
   --stream-h: min(100vw * 9 / 16, 100%);
   top: calc((100% - var(--stream-h)) / 2 + 3%);

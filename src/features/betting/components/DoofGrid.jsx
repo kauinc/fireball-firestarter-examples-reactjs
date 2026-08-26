@@ -82,6 +82,8 @@ export function DoofGrid({
   return (
     <div
       className="doof-grid"
+      role="group"
+      aria-label="Betting board (pointer placement only in this prototype)"
       aria-disabled={disabled || undefined}
       data-disabled={disabled ? 'true' : 'false'}
     >

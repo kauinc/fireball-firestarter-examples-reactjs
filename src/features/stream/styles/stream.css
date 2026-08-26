@@ -22,12 +22,35 @@
 .stream-shell__retry {
   position: absolute;
   inset: 0;
-  z-index: 30;
+  z-index: var(--z-modal, 40);
   margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
+}
+
+.stream-shell__banner {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: var(--z-banner, 28);
+  transform: translateX(-50%);
+  max-width: min(92vw, 420px);
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font: 700 12px/1.2 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
+  letter-spacing: 0.04em;
+  text-align: center;
+  pointer-events: none;
+}
+
+.stream-shell__banner--warn {
+  border-color: rgba(255, 196, 80, 0.55);
+  color: #ffe6a3;
 }
 
 .stream-viewport {

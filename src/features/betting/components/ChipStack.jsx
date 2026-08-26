@@ -1,5 +1,5 @@
 import { uiAssets } from '../assets/uiAssets.js'
-import { getBetTotal } from '../hooks/useChipBets.js'
+import { getBetTotal } from '../utils/chipMath.js'
 
 function formatChipTotal(value) {
   if (Number.isInteger(value)) return String(value)

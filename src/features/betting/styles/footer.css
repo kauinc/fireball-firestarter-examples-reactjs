@@ -205,10 +205,11 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
-  cursor: pointer;
+  cursor: default;
   display: grid;
   place-items: center;
   padding: 0;
+  pointer-events: none;
 }
 
 .betting-footer__menu-icon {
@@ -230,7 +231,7 @@
 
 .betting-chip-ghost {
   position: fixed;
-  z-index: 40;
+  z-index: var(--z-drag-ghost, 35);
   width: calc(44px * var(--hud-scale));
   height: calc(44px * var(--hud-scale));
   transform: translate(-50%, -50%);
@@ -247,11 +248,4 @@
   paint-order: stroke fill;
   pointer-events: none;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
-}
-
-@media (max-width: 720px) {
-  /* Keep HISTORY visible; only hide the Crazy Combo caption to save space */
-  .betting-footer__combo-wrap .betting-footer__caption {
-    display: none;
-  }
 }

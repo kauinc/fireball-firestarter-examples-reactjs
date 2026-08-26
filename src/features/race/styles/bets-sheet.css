@@ -3,23 +3,31 @@
   left: 0;
   right: 0;
   bottom: 0;
+  /* Must stay under `.betting-overlay__bottom` (z-index: 7) so the
+     CURRENT BETS board is not dimmed and chip-stack hover still works. */
   z-index: 5;
   width: 100%;
   height: min(70vh, 560px);
   margin: 0;
   padding: 0;
   border: 0;
-  background-color: transparent;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: bottom center;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.16) 50%,
+    transparent 100%
+  );
   cursor: pointer;
+}
+
+.race-overlay.is-bets-open .betting-overlay__fade {
+  display: none;
 }
 
 /* In-flow panel (same stack as betting hud), not absolute dock */
 .race-bets-sheet__panel {
   position: relative;
-  z-index: 6;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;

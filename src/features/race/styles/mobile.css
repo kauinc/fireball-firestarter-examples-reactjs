@@ -1,68 +1,7 @@
 ﻿/**
  * Race overlay mobile — portrait / landscape compact.
+ * Shared compact shell lives in hud-compact.css.
  */
-/* —— Race compact: mirror betting portrait / landscape —— */
-.race-overlay[data-compact='true'] {
-  --history-col-shift: 0px;
-  --pattern-label-x: 4px;
-}
-
-.race-overlay[data-compact='true'] .betting-overlay__bottom {
-  padding-left: max(8px, env(safe-area-inset-left, 0px));
-  padding-right: max(8px, env(safe-area-inset-right, 0px));
-  padding-bottom: max(
-    calc(8px * var(--hud-scale)),
-    env(safe-area-inset-bottom, 0px)
-  );
-  overflow: visible;
-}
-
-.race-overlay[data-compact='true'] .betting-overlay__hud {
-  width: min(var(--hud-w), 100%);
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.race-overlay[data-compact='true'] .betting-overlay__menu-top {
-  display: grid;
-}
-
-.race-overlay[data-compact='true'] .betting-footer__menu {
-  display: none;
-}
-
-.race-overlay[data-compact='true'] .betting-overlay__fullscreen {
-  top: max(10px, env(safe-area-inset-top, 0px));
-  left: max(10px, env(safe-area-inset-left, 0px));
-  right: auto;
-  bottom: auto;
-  width: calc(40px * var(--hud-scale));
-  height: calc(40px * var(--hud-scale));
-  z-index: 9;
-}
-
-.race-overlay[data-compact='true'] .doof-grid {
-  transform: none;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.race-overlay[data-compact='true'] .mid-controls {
-  transform: none;
-  width: 100%;
-  max-width: 100%;
-  padding-left: 0;
-  box-sizing: border-box;
-  justify-content: center;
-}
-
-.race-overlay[data-compact='true'] .mid-controls-stack {
-  width: 100%;
-  max-width: 100%;
-  transform: none;
-  padding-left: 0;
-}
 
 .race-overlay[data-compact='true'] .race-bets-sheet__table .race-overlay__current-bets {
   left: 50%;
@@ -77,7 +16,6 @@
   width: auto;
 }
 
-/* Portrait race — same stack as betting: board → accessories → footer */
 .race-overlay[data-orient='portrait'] {
   --hud-w: calc(374px * var(--hud-scale));
 }
@@ -176,7 +114,6 @@
   height: calc(44px * var(--hud-scale));
 }
 
-/* Landscape compact race */
 .race-overlay[data-orient='landscape'][data-compact='true'] {
   --hud-w: calc(860px * var(--hud-scale));
 }

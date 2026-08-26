@@ -1,63 +1,14 @@
 ﻿/**
  * Mobile betting HUD — portrait / landscape layouts matching product refs.
- *
- * Portrait: full-width stack; HISTORY top-left on black when Advanced is on.
- * Landscape compact: HISTORY on the left when Advanced is on.
- * data-orient + data-advanced + data-compact drive the variants.
+ * Shared compact shell lives in hud-compact.css.
  */
-
-/* —— Shared compact resets (no desktop +90px hang) —— */
-.betting-overlay[data-compact='true'] {
-  --history-col-shift: 0px;
-  --pattern-label-x: 4px;
-}
-
-.betting-overlay[data-compact='true'] .betting-overlay__bottom {
-  padding-left: max(8px, env(safe-area-inset-left, 0px));
-  padding-right: max(8px, env(safe-area-inset-right, 0px));
-  padding-bottom: max(
-    calc(8px * var(--hud-scale)),
-    env(safe-area-inset-bottom, 0px)
-  );
-  overflow: visible;
-}
-
-.betting-overlay[data-compact='true'] .betting-overlay__hud {
-  width: min(var(--hud-w), 100%);
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.betting-overlay[data-compact='true'] .doof-grid {
-  transform: none;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.betting-overlay[data-compact='true'] .mid-controls {
-  transform: none;
-  width: 100%;
-  max-width: 100%;
-  padding-left: 0;
-  box-sizing: border-box;
-}
-
-/* Menu lives top-right on mobile (like reference); hide footer clone */
-.betting-overlay[data-compact='true'] .betting-footer__menu {
-  display: none;
-}
-
-.betting-overlay[data-compact='true'] .betting-overlay__menu-top {
-  display: grid;
-}
 
 .betting-overlay__menu-top {
   display: none;
   position: absolute;
   top: max(10px, env(safe-area-inset-top, 0px));
   right: max(10px, env(safe-area-inset-right, 0px));
-  z-index: 6;
+  z-index: var(--z-overlay-chrome, 15);
   width: calc(48px * var(--hud-scale));
   height: calc(48px * var(--hud-scale));
   border: 0;
@@ -65,8 +16,9 @@
   background-color: transparent;
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  cursor: pointer;
+  cursor: default;
   place-items: center;
+  pointer-events: none;
 }
 
 .betting-overlay__menu-top .betting-footer__menu-icon {
@@ -74,21 +26,7 @@
   height: calc(16px * var(--hud-scale));
 }
 
-/* Fullscreen: top-left on compact — never over Potential Win / Total Bet */
-.betting-overlay[data-compact='true'] .betting-overlay__fullscreen {
-  top: max(10px, env(safe-area-inset-top, 0px));
-  left: max(10px, env(safe-area-inset-left, 0px));
-  right: auto;
-  bottom: auto;
-  width: calc(40px * var(--hud-scale));
-  height: calc(40px * var(--hud-scale));
-  z-index: 6;
-}
-
-/* ========== PORTRAIT ==========
- * Stack (top → bottom): betting table → chips tray →
- * Balance (left) | Crazy Combo (center) | Total Bet (right)
- */
+/* ========== PORTRAIT ========== */
 .betting-overlay[data-orient='portrait'] {
   --hud-w: calc(374px * var(--hud-scale));
 }
@@ -98,10 +36,6 @@
     calc(56px * var(--hud-scale)),
     calc(48px + env(safe-area-inset-top, 0px))
   );
-}
-
-.betting-overlay[data-orient='portrait'] .betting-overlay__bottom {
-  align-items: flex-end;
 }
 
 .betting-overlay[data-orient='portrait'] .betting-overlay__hud {
@@ -125,7 +59,6 @@
   order: 1;
 }
 
-/* Portrait: HISTORY table only (no button) — top black area when Advanced is on */
 .betting-overlay[data-orient='portrait'] .mid-controls__history-slot {
   display: none !important;
 }
@@ -136,21 +69,19 @@
 
 .betting-overlay[data-orient='portrait'][data-advanced='true']
   .betting-overlay__history-top {
-  /* Same size tokens as desktop History sheet (defined on mid-controls slot there) */
   --history-sheet-w: calc(152px * var(--hud-scale));
   --history-sheet-h: calc(192px * var(--hud-scale));
   --history-cols-h: calc(11px * var(--hud-scale));
 
   display: block;
   position: absolute;
-  /* Below PLACE YOUR BETS + timer, centered in the black letterbox */
   top: max(
     calc(118px * var(--hud-scale)),
     calc(108px + env(safe-area-inset-top, 0px))
   );
   left: 50%;
   transform: translateX(-50%);
-  z-index: 5;
+  z-index: var(--z-overlay-sheet, 18);
   width: var(--history-sheet-w);
   pointer-events: none;
 }
@@ -170,8 +101,7 @@
 }
 
 .betting-overlay[data-orient='portrait'][data-advanced='true'] .betting-banner {
-  /* Keep banner clear of the left history rail */
-  z-index: 6;
+  z-index: var(--z-banner, 28);
 }
 
 .betting-overlay[data-orient='portrait'] .mid-controls {
@@ -179,78 +109,8 @@
   gap: calc(10px * var(--hud-scale));
   width: 100%;
   transform: none;
-}
-
-.betting-overlay[data-orient='portrait'][data-advanced='false'] .mid-controls-stack {
-  display: none;
-}
-
-.betting-overlay[data-orient='portrait'] .mid-controls__accessories {
-  width: auto;
-  flex: 1 1 auto;
-  max-width: calc(220px * var(--hud-scale));
-}
-
-.betting-overlay[data-orient='portrait'] .mid-controls__positions {
-  width: calc(140px * var(--hud-scale));
-  transform: none;
-}
-
-.betting-overlay[data-orient='portrait'] .mid-controls-stack {
-  width: 100%;
-  transform: none;
   padding-left: 0;
   order: 2;
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos-row {
-  width: 100%;
-  justify-content: center;
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos {
-  width: 100%;
-  max-width: 100%;
-  gap: calc(8px * var(--hud-scale));
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__item--combo,
-.betting-overlay[data-orient='portrait'] .crazy-combos__item--crazy {
-  width: 100%;
-  min-width: 0;
-  flex: 0 0 auto;
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__item--crazy .crazy-combos__caption {
-  font-size: calc(9px * var(--hud-scale));
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__caption {
-  font-size: calc(9px * var(--hud-scale));
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__bar {
-  height: calc(28px * var(--hud-scale));
-  padding: 0 calc(10px * var(--hud-scale));
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__track {
-  padding-right: calc(48px * var(--hud-scale));
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__desc,
-.betting-overlay[data-orient='portrait'] .crazy-combos__slot-label {
-  font-size: calc(9px * var(--hud-scale));
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__pays-label {
-  font-size: calc(7px * var(--hud-scale));
-}
-
-.betting-overlay[data-orient='portrait'] .crazy-combos__pays-value {
-  font-size: calc(11px * var(--hud-scale));
 }
 
 .betting-overlay[data-orient='portrait'] .betting-footer {
@@ -345,7 +205,6 @@
   padding-left: 0;
 }
 
-/* Landscape: HISTORY left rail only when Advanced is on */
 .betting-overlay[data-orient='landscape'][data-compact='true'][data-advanced='false']
   .mid-controls__history-slot {
   display: none;
@@ -364,7 +223,6 @@
 
 .betting-overlay[data-orient='landscape'][data-compact='true'][data-advanced='false']
   .mid-controls {
-  /* Simple landscape: hide hats/glasses/positions row entirely */
   display: none;
 }
 
@@ -399,3 +257,6 @@
   height: calc(44px * var(--hud-scale));
 }
 
+.betting-overlay[data-compact='true'] .betting-footer__combo-wrap .betting-footer__caption {
+  display: none;
+}

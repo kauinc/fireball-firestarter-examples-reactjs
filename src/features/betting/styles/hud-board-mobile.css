@@ -67,15 +67,17 @@
   left: 0;
   right: 0;
   top: 0;
-  z-index: 7;
+  z-index: var(--z-overlay-sheet, 18);
   width: 100%;
   height: min(42vh, 360px);
   margin: 0;
   padding: 0;
   border: 0;
   pointer-events: none;
-  background-color: transparent;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: top center;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.22) 55%,
+    transparent 100%
+  );
 }

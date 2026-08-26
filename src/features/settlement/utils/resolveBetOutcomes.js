@@ -1,5 +1,5 @@
 import { getDoofBoardCell } from '../../betting/assets/doofImages.js'
-import { getBetTotal } from '../../betting/hooks/useChipBets.js'
+import { getBetTotal } from '../../betting/utils/chipMath.js'
 
 /** Mock payout multipliers by target type (roulette-style odds feel). */
 const PAYOUT_BY_TYPE = Object.freeze({

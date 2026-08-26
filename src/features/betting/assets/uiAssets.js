@@ -3,8 +3,8 @@ import crazyComboBar from '../../../assets/ui/crazy-combo-bar.png'
 import historyBar from '../../../assets/ui/history-bar.png'
 import balanceBar from '../../../assets/ui/balance-value-bar.png'
 import hatsGlassesBar from '../../../assets/ui/hats-glasses-bar.png'
-import hatIcon from '../../../assets/ui/hat.png'
-import glassesIcon from '../../../assets/ui/glasses.png'
+import hatIcon from '../../../assets/ui/hat.webp'
+import glassesIcon from '../../../assets/ui/glasses.webp'
 import allPositionBar from '../../../assets/ui/all-position-bar.png'
 import positionFrame from '../../../assets/ui/frame-position-bar.png'
 import scrollPositionBar from '../../../assets/ui/scroll-position-bar.png'
@@ -21,9 +21,7 @@ import violetChip from '../../../assets/ui/chip-violet.png'
 import redChip from '../../../assets/ui/chip-red.png'
 import greenChip from '../../../assets/ui/chip-green.png'
 import chipHighlighter from '../../../assets/ui/chip-highlighter.png'
-import infoButton from '../../../assets/ui/info-button.png'
 import fullscreen from '../../../assets/ui/fullscreen.png'
-import darkenGradientDown from '../../../assets/ui/darken-gradient-down.png'
 
 export const uiAssets = Object.freeze({
   textBar,
@@ -31,7 +29,6 @@ export const uiAssets = Object.freeze({
   historyBar,
   balanceBar,
   hatsGlassesBar,
-  darkenGradientDown,
   hatIcon,
   glassesIcon,
   allPositionBar,
@@ -44,7 +41,6 @@ export const uiAssets = Object.freeze({
   toggleSlide,
   activeToggle,
   chipHighlighter,
-  infoButton,
   fullscreen,
   chips: Object.freeze({
     0.2: whiteChip,

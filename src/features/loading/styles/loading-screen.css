@@ -5,7 +5,7 @@
 
   position: absolute;
   inset: 0;
-  z-index: 20;
+  z-index: var(--z-loading, 25);
   display: grid;
   place-items: center;
   overflow: hidden;

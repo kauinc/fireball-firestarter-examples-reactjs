@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { BettingBanner } from './BettingBanner.jsx'
 import { DoofGrid } from './DoofGrid.jsx'
 import { MidControls } from './MidControls.jsx'
@@ -12,30 +12,34 @@ import { useHudViewport } from '../hooks/useHudScale.js'
 import { useFullscreen } from '../hooks/useFullscreen.js'
 import { uiAssets } from '../assets/uiAssets.js'
 import { positionsUpTo } from '../constants/positions.js'
-import '../../loading/styles/fonts.css'
+import {
+  HudFade,
+  HudFullscreenButton,
+  HudMenuChrome,
+} from '../../hud/index.js'
 import '../styles/betting.css'
 
 /**
- * Betting HUD driven by Supabase `rounds.status` (Realtime).
- * Visible only while status === BETTING_OPEN.
- *
- * Mobile (compact): portrait / landscape layouts match product refs.
- * Advanced Menu toggles HISTORY (landscape left / portrait top table) + Hats/Glasses/Positions.
+ * Round-scoped betting UI — remounts on new round via `key={sessionKey}`.
  */
-export function BettingOverlay() {
-  const { scale: viewportScale, compact, orientation } = useHudViewport()
-  const { round, status } = useCurrentRound()
-  const { phase, secondsLeft, bannerLabel, isBettingUiVisible, disabled } =
-    useBettingOverlayState({ status, round })
-
-  // Keep bets for the whole round (race HUD reads the same placements).
-  const sessionKey = round?.id ? String(round.id) : null
-
-  const [trackedSessionKey, setTrackedSessionKey] = useState(sessionKey)
+function BettingRoundSession({
+  sessionKey,
+  phase,
+  secondsLeft,
+  bannerLabel,
+  disabled,
+  compact,
+  orientation,
+  viewportScale,
+  round,
+  status,
+  isFullscreen,
+  toggleFullscreen,
+  hidden = false,
+}) {
+  const boardRef = useRef(null)
   const [accessory, setAccessory] = useState(null)
   const [selectedChip, setSelectedChip] = useState(5)
-  // Desktop: mid-controls always visible; switch is Crazy Combo.
-  // Compact: Advanced Menu reveals mid + portrait history table; switch also Crazy Combo bars.
   const [crazyCombo, setCrazyCombo] = useState(false)
   const [advancedMenu, setAdvancedMenu] = useState(false)
   const [selectedPositions, setSelectedPositions] = useState(['1st'])
@@ -47,29 +51,20 @@ export function BettingOverlay() {
     crazyCombo,
   )
   const { dragChip, startDrag, clearDrag, isDragPlacement } = useChipDrag({
-    disabled,
+    disabled: disabled || hidden,
     placeBet,
+    boardRef,
   })
-  const { isFullscreen, toggleFullscreen } = useFullscreen()
 
-  if (trackedSessionKey !== sessionKey) {
-    setTrackedSessionKey(sessionKey)
-    setAccessory(null)
-    setSelectedPositions(['1st'])
-    setHistoryOpen(false)
-    setAdvancedMenu(false)
-    setCrazyCombo(false)
-  }
+  // Round-scoped state remounts via parent `key={sessionKey}` — no render reset.
+
+  if (hidden) return null
 
   function handlePlaceBet(target) {
     if (isDragPlacement()) return
     clearDrag()
     if (disabled || !target) return
     placeBet(selectedChip, target)
-  }
-
-  if (!isBettingUiVisible) {
-    return null
   }
 
   const labelBets = bets.filter(
@@ -98,24 +93,11 @@ export function BettingOverlay() {
     >
       <BettingBanner label={bannerLabel} secondsLeft={secondsLeft} />
 
-      {compact ? (
-        <button
-          type="button"
-          className="betting-overlay__menu-top"
-          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-          aria-label="Menu"
-        >
-          <span className="betting-footer__menu-icon" aria-hidden="true" />
-        </button>
-      ) : null}
+      {compact ? <HudMenuChrome placement="top" /> : null}
 
       {showPortraitTopHistory ? (
         <>
-          <div
-            className="hud-history-top__darken"
-            style={{ backgroundImage: `url(${uiAssets.darkenGradientDown})` }}
-            aria-hidden="true"
-          />
+          <div className="hud-history-top__darken" aria-hidden="true" />
           <div className="betting-overlay__history-top">
             <HistoryPanel open />
           </div>
@@ -123,9 +105,9 @@ export function BettingOverlay() {
       ) : null}
 
       <div className="betting-overlay__bottom">
-        <div className="betting-overlay__fade" aria-hidden="true" />
+        <HudFade />
 
-        <div className="betting-overlay__hud">
+        <div className="betting-overlay__hud" ref={boardRef}>
           <DoofGrid
             disabled={disabled}
             bets={bets}
@@ -180,20 +162,10 @@ export function BettingOverlay() {
         </div>
       </div>
 
-      <button
-        type="button"
-        className={`betting-overlay__fullscreen${isFullscreen ? ' is-active' : ''}`}
-        aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
-        aria-pressed={isFullscreen}
-        onClick={toggleFullscreen}
-      >
-        <img
-          src={uiAssets.fullscreen}
-          alt=""
-          className="betting-overlay__fullscreen-icon"
-          draggable={false}
-        />
-      </button>
+      <HudFullscreenButton
+        isFullscreen={isFullscreen}
+        onToggle={toggleFullscreen}
+      />
 
       {ghostSrc ? (
         <div
@@ -209,5 +181,42 @@ export function BettingOverlay() {
         </div>
       ) : null}
     </div>
+  )
+}
+
+/**
+ * Betting HUD driven by Supabase `rounds.status` (Realtime).
+ * Visible only while status === BETTING_OPEN.
+ *
+ * Mobile (compact): portrait / landscape layouts match product refs.
+ * Advanced Menu toggles HISTORY (landscape left / portrait top table) + Hats/Glasses/Positions.
+ */
+export function BettingOverlay() {
+  const { scale: viewportScale, compact, orientation } = useHudViewport()
+  const { round, status } = useCurrentRound()
+  const { phase, secondsLeft, bannerLabel, isBettingUiVisible, disabled } =
+    useBettingOverlayState({ status, round })
+  const { isFullscreen, toggleFullscreen } = useFullscreen()
+
+  // Keep bets for the whole round (race HUD reads the same placements).
+  const sessionKey = round?.id ? String(round.id) : 'no-round'
+
+  return (
+    <BettingRoundSession
+      key={sessionKey}
+      sessionKey={sessionKey}
+      phase={phase}
+      secondsLeft={secondsLeft}
+      bannerLabel={bannerLabel}
+      disabled={disabled}
+      compact={compact}
+      orientation={orientation}
+      viewportScale={viewportScale}
+      round={round}
+      status={status}
+      isFullscreen={isFullscreen}
+      toggleFullscreen={toggleFullscreen}
+      hidden={!isBettingUiVisible}
+    />
   )
 }

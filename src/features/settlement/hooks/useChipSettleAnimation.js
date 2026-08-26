@@ -35,7 +35,25 @@ export function useChipSettleAnimation({
   const timersRef = useRef([])
   const rafRef = useRef(0)
   const betsRef = useRef(bets)
-  betsRef.current = bets
+  const outcomesRef = useRef(outcomes)
+  const boardRefStable = useRef(boardRef)
+  const winBarRefStable = useRef(winBarRef)
+
+  useEffect(() => {
+    betsRef.current = bets
+  }, [bets])
+
+  useEffect(() => {
+    outcomesRef.current = outcomes
+  }, [outcomes])
+
+  useEffect(() => {
+    boardRefStable.current = boardRef
+  }, [boardRef])
+
+  useEffect(() => {
+    winBarRefStable.current = winBarRef
+  }, [winBarRef])
 
   function clearTimers() {
     for (const id of timersRef.current) window.clearTimeout(id)
@@ -47,19 +65,37 @@ export function useChipSettleAnimation({
   }
 
   const betsKey = (bets ?? []).map((b) => b.id).join(',')
+  const outcomesKey = outcomes
+    ? Object.keys(outcomes.byId ?? {})
+        .sort()
+        .map((id) => {
+          const row = outcomes.byId[id]
+          return `${id}:${row?.won ? 1 : 0}:${row?.payout ?? 0}`
+        })
+        .join('|')
+    : ''
 
   useEffect(() => {
     clearTimers()
-    setFlights([])
-    setDisplayedWin(0)
 
-    if (!enabled || !outcomes || !betsKey) {
-      setPhase('idle')
-      return undefined
+    if (!enabled || !outcomesKey || !betsKey) {
+      const resetId = window.setTimeout(() => {
+        setPhase('idle')
+        setFlights([])
+        setDisplayedWin(0)
+      }, 0)
+      timersRef.current.push(resetId)
+      return () => clearTimers()
     }
 
-    const key = `${betsKey}:${totalWin}`
+    const key = `${betsKey}:${outcomesKey}:${totalWin}`
     runKeyRef.current = key
+    const prepId = window.setTimeout(() => {
+      if (runKeyRef.current !== key) return
+      setFlights([])
+      setDisplayedWin(0)
+    }, 0)
+    timersRef.current.push(prepId)
 
     const startId = window.setTimeout(() => {
       if (runKeyRef.current !== key) return
@@ -69,9 +105,9 @@ export function useChipSettleAnimation({
         if (runKeyRef.current !== key) return
         const nextFlights = buildFlights({
           bets: betsRef.current,
-          outcomes,
-          boardEl: boardRef.current,
-          winBarEl: winBarRef.current,
+          outcomes: outcomesRef.current,
+          boardEl: boardRefStable.current?.current ?? null,
+          winBarEl: winBarRefStable.current?.current ?? null,
         })
         setFlights(nextFlights)
         setPhase('fly')
@@ -123,7 +159,7 @@ export function useChipSettleAnimation({
     return () => {
       clearTimers()
     }
-  }, [enabled, betsKey, outcomes, totalWin, boardRef, winBarRef])
+  }, [enabled, betsKey, outcomesKey, totalWin])
 
   const showCounted =
     phase === 'fly' || phase === 'count' || phase === 'done'
@@ -194,7 +230,7 @@ function buildFlights({ bets, outcomes, boardEl, winBarEl }) {
   let loseIndex = 0
 
   for (const bet of bets) {
-    const result = outcomes.byId?.[bet.id]
+    const result = outcomes?.byId?.[bet.id]
     if (!result) continue
 
     const node = boardEl.querySelector(`[data-bet-id="${bet.id}"]`)

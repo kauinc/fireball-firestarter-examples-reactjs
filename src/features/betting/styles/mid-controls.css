@@ -159,6 +159,10 @@
   grid-template-columns: repeat(3, 1fr);
   flex: 1 1 0;
   min-height: 0;
+}
+
+.history-panel__row.is-inserting,
+.history-panel__row.is-shifting {
   will-change: transform, opacity;
 }
 
@@ -286,8 +290,9 @@
   pointer-events: auto;
 }
 
-.mid-controls__accessory.is-selected {
-  box-shadow: 0 0 0 2px var(--bet-gold);
+.mid-controls__accessory:focus,
+.mid-controls__accessory:focus-visible {
+  outline: none;
 }
 
 .mid-controls__positions {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { CHIP_VALUES } from '../constants/doofs.js'
 import { publishRoundBets } from '../state/roundBetsStore.js'
 import { betTargetKey } from '../utils/betTargets.js'
+import { consolidateChips, getBetTotal, roundMoney, stackTotal } from '../utils/chipMath.js'
 
 let betSeq = 0
 
@@ -10,40 +10,10 @@ function nextBetId() {
   return `bet-${betSeq}`
 }
 
-function stackTotal(chips) {
-  return chips.reduce((sum, chip) => sum + chip.value * chip.count, 0)
-}
-
-function roundMoney(value) {
-  return Math.round(value * 100) / 100
-}
-
-/**
- * Re-express a stack as the fewest / highest denominations for its total.
- * e.g. 1 + 2 + 2 → 5, and 2×0.5 → 1.
- */
-export function consolidateChips(chips) {
-  let cents = Math.round(stackTotal(chips) * 100)
-  if (cents <= 0) return []
-
-  const result = []
-  for (let i = CHIP_VALUES.length - 1; i >= 0; i -= 1) {
-    const value = CHIP_VALUES[i]
-    const valueCents = Math.round(value * 100)
-    const count = Math.floor(cents / valueCents)
-    if (count > 0) {
-      result.push({ value, count })
-      cents -= count * valueCents
-    }
-  }
-
-  // Keep visual order small → large (stack reads bottom → top).
-  return result.reverse()
-}
-
 /**
  * Local chip placements. Same denomination stacks, then consolidates
  * into higher chips when exact combinations are possible.
+ * Remount the consumer with `key={roundId}` to clear bets for a new round.
  */
 export function useChipBets(
   selectedPositions,
@@ -51,12 +21,6 @@ export function useChipBets(
   crazyCombo = false,
 ) {
   const [bets, setBets] = useState([])
-  const [trackedRoundId, setTrackedRoundId] = useState(roundId)
-
-  if (trackedRoundId !== roundId) {
-    setTrackedRoundId(roundId)
-    setBets([])
-  }
 
   const totalBet = useMemo(
     () => roundMoney(bets.reduce((sum, bet) => sum + stackTotal(bet.chips), 0)),
@@ -135,6 +99,4 @@ export function useChipBets(
   }
 }
 
-export function getBetTotal(bet) {
-  return roundMoney(stackTotal(bet.chips))
-}
+export { getBetTotal, consolidateChips }

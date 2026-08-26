@@ -10,13 +10,15 @@ const MOVE_THRESHOLD_PX_SQ = 36
  * @param {{
  *   disabled: boolean,
  *   placeBet: (amount: number, target: Record<string, unknown>) => void,
+ *   boardRef?: React.RefObject<HTMLElement | null>,
  * }} args
  */
-export function useChipDrag({ disabled, placeBet }) {
+export function useChipDrag({ disabled, placeBet, boardRef = null }) {
   const [dragChip, setDragChip] = useState(null)
   const dragRef = useRef(null)
   const disabledRef = useRef(disabled)
   const placeBetRef = useRef(placeBet)
+  const boardRefInternal = useRef(boardRef)
 
   useEffect(() => {
     disabledRef.current = disabled
@@ -25,6 +27,10 @@ export function useChipDrag({ disabled, placeBet }) {
   useEffect(() => {
     placeBetRef.current = placeBet
   }, [placeBet])
+
+  useEffect(() => {
+    boardRefInternal.current = boardRef
+  }, [boardRef])
 
   useEffect(() => {
     dragRef.current = dragChip
@@ -54,7 +60,12 @@ export function useChipDrag({ disabled, placeBet }) {
     function onUp(event) {
       const chip = dragRef.current
       if (chip?.moved && !disabledRef.current) {
-        const target = resolveDropAtPoint(event.clientX, event.clientY)
+        const root = boardRefInternal.current?.current ?? null
+        const target = resolveDropAtPoint(
+          event.clientX,
+          event.clientY,
+          root,
+        )
         if (target) placeBetRef.current(chip.value, target)
       }
       setDragChip(null)
