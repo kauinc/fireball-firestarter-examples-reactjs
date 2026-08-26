@@ -1,0 +1,83 @@
+﻿/**
+ * Shared portrait doof-grid label/field tweaks for betting / race / settlement.
+ */
+/* Portrait board labels — betting / race / settlement */
+.betting-overlay[data-orient='portrait'] .doof-grid__colors,
+.race-overlay[data-orient='portrait'] .doof-grid__colors,
+.settlement-overlay[data-orient='portrait'] .doof-grid__colors {
+  margin-inline: calc(2px * var(--hud-scale));
+  align-items: end;
+}
+
+.betting-overlay[data-orient='portrait'] .doof-grid__colors .doof-grid__chip-label,
+.race-overlay[data-orient='portrait'] .doof-grid__colors .doof-grid__chip-label,
+.settlement-overlay[data-orient='portrait'] .doof-grid__colors .doof-grid__chip-label {
+  height: calc(34px * var(--hud-scale));
+  font-size: calc(13px * var(--hud-scale));
+  letter-spacing: 0;
+  transform: none;
+  background-size: 100% 100%;
+  overflow: hidden;
+}
+
+.betting-overlay[data-orient='portrait'] .doof-grid__patterns,
+.race-overlay[data-orient='portrait'] .doof-grid__patterns,
+.settlement-overlay[data-orient='portrait'] .doof-grid__patterns {
+  margin-block: calc(2px * var(--hud-scale));
+}
+
+.betting-overlay[data-orient='portrait'] .doof-grid__patterns .doof-grid__chip-label,
+.race-overlay[data-orient='portrait'] .doof-grid__patterns .doof-grid__chip-label,
+.settlement-overlay[data-orient='portrait'] .doof-grid__patterns .doof-grid__chip-label {
+  font-size: calc(12px * var(--hud-scale));
+  --pattern-label-h: calc(36px * var(--hud-scale));
+  transform: none;
+}
+
+.betting-overlay[data-orient='portrait'] .doof-grid__patterns .doof-grid__chip-label::before,
+.race-overlay[data-orient='portrait'] .doof-grid__patterns .doof-grid__chip-label::before,
+.settlement-overlay[data-orient='portrait'] .doof-grid__patterns .doof-grid__chip-label::before {
+  width: 112%;
+  height: var(--pattern-label-h);
+}
+
+.betting-overlay[data-orient='portrait'] .doof-grid__field,
+.race-overlay[data-orient='portrait'] .doof-grid__field,
+.settlement-overlay[data-orient='portrait'] .doof-grid__field {
+  min-height: calc(110px * var(--hud-scale));
+  --field-pad: calc(4px * var(--hud-scale));
+}
+
+.betting-overlay[data-orient='portrait'] .doof-grid__odds,
+.race-overlay[data-orient='portrait'] .doof-grid__odds,
+.settlement-overlay[data-orient='portrait'] .doof-grid__odds {
+  font-size: calc(9px * var(--hud-scale));
+  gap: calc(6px * var(--hud-scale));
+}
+
+/* Top HISTORY letterbox dim — same asset as race CURRENT BETS sheet */
+.hud-history-top__darken {
+  display: none;
+}
+
+.betting-overlay[data-orient='portrait'][data-advanced='true'] .hud-history-top__darken,
+.settlement-overlay[data-orient='portrait'] .hud-history-top__darken {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: var(--z-overlay-sheet, 18);
+  width: 100%;
+  height: min(42vh, 360px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.22) 55%,
+    transparent 100%
+  );
+}

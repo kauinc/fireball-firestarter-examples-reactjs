@@ -6,11 +6,12 @@ import {
 } from '../constants/bettingPhase.js'
 import { RoundState } from '../../../domain/round/index.js'
 
+/** Mock window start per round — survives remount/reconnect for the same id. */
+const openedAtByRoundId = new Map()
+
 /**
- * Overlay UI from round `status` only (no timestamp inference).
- *
- * Prototype: only BETTING_OPEN shows the betting overlay.
- * Race / settlement overlays come later.
+ * Overlay UI from round `status` only (no timestamp inference for visibility).
+ * Visible while `status === BETTING_OPEN` (client mock countdown for PLACE/NO MORE BETS).
  *
  * @param {{
  *   status: string | null,
@@ -18,31 +19,35 @@ import { RoundState } from '../../../domain/round/index.js'
  * }} args
  */
 export function useBettingOverlayState({ status, round = null }) {
-  const [now, setNow] = useState(null)
-  const [openedLocalAt, setOpenedLocalAt] = useState(null)
-  const openKey = `${round?.id ?? ''}:${status ?? ''}`
+  const [now, setNow] = useState(() => Date.now())
+  const roundId = round?.id != null ? String(round.id) : null
 
   useEffect(() => {
-    if (status !== RoundState.BETTING_OPEN) {
-      queueMicrotask(() => setOpenedLocalAt(null))
-      return undefined
+    if (status !== RoundState.BETTING_OPEN || !roundId) return undefined
+
+    if (!openedAtByRoundId.has(roundId)) {
+      openedAtByRoundId.set(roundId, Date.now())
     }
-    queueMicrotask(() => setOpenedLocalAt(Date.now()))
+
+    // Drop old keys so the map does not grow forever across rounds.
+    for (const key of openedAtByRoundId.keys()) {
+      if (key !== roundId) openedAtByRoundId.delete(key)
+    }
+
     return undefined
-  }, [status, openKey])
+  }, [status, roundId])
 
   useEffect(() => {
     if (status !== RoundState.BETTING_OPEN) return undefined
     const id = setInterval(() => setNow(Date.now()), 200)
-    queueMicrotask(() => setNow(Date.now()))
     return () => clearInterval(id)
-  }, [status])
+  }, [status, roundId])
 
   return useMemo(() => {
-    // Per product flow: ROUND_CREATED → do nothing; BETTING_CLOSED → clear; …
     if (status === RoundState.BETTING_OPEN) {
+      const openedLocalAt = roundId ? openedAtByRoundId.get(roundId) : null
       let secondsLeft = BETTING_WINDOW_SECONDS
-      if (openedLocalAt != null && now != null) {
+      if (openedLocalAt != null) {
         const elapsed = Math.floor((now - openedLocalAt) / 1000)
         secondsLeft = Math.max(0, BETTING_WINDOW_SECONDS - elapsed)
       }
@@ -68,5 +73,5 @@ export function useBettingOverlayState({ status, round = null }) {
       canPlaceBets: false,
       disabled: true,
     }
-  }, [status, openedLocalAt, now])
+  }, [status, roundId, now])
 }

@@ -3,7 +3,6 @@ import {
   LOADING_STATUS_LABEL,
   LoadingStatus,
 } from '../constants/loadingStatus.js'
-import '../styles/fonts.css'
 import '../styles/loading-screen.css'
 
 /**

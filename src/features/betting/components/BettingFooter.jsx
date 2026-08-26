@@ -1,6 +1,7 @@
 import { CHIP_VALUES } from '../constants/doofs.js'
 import { uiAssets } from '../assets/uiAssets.js'
 import { formatMoney } from '../utils/formatMoney.js'
+import { HudMenuChrome } from '../../hud/index.js'
 
 /**
  * Bottom chrome:
@@ -19,6 +20,7 @@ export function BettingFooter({
   balance = 5100,
   totalBet = 0,
   hideMenu = false,
+  switchLabel = 'CRAZY COMBO',
 }) {
   return (
     <footer className="betting-footer">
@@ -33,12 +35,13 @@ export function BettingFooter({
       </div>
 
       <div className="betting-footer__combo-wrap">
-        <span className="betting-footer__caption">CRAZY COMBO</span>
+        <span className="betting-footer__caption">{switchLabel}</span>
         <button
           type="button"
           className={`betting-footer__combo${crazyCombo ? ' is-on' : ''}`}
           disabled={disabled}
           aria-pressed={crazyCombo}
+          aria-label={switchLabel}
           onClick={onToggleCrazyCombo}
         >
           <span
@@ -126,17 +129,7 @@ export function BettingFooter({
         </div>
       </div>
 
-      {hideMenu ? null : (
-        <button
-          type="button"
-          className="betting-footer__menu"
-          style={{ backgroundImage: `url(${uiAssets.roundButton})` }}
-          aria-label="Menu"
-          disabled={disabled}
-        >
-          <span className="betting-footer__menu-icon" aria-hidden="true" />
-        </button>
-      )}
+      {hideMenu ? null : <HudMenuChrome placement="footer" />}
     </footer>
   )
 }

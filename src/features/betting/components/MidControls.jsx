@@ -8,7 +8,7 @@ import {
 import { uiAssets } from '../assets/uiAssets.js'
 import { accessoryTarget } from '../utils/betTargets.js'
 import { ChipStack } from './ChipStack.jsx'
-import { HistoryPanel } from './HistoryPanel.jsx'
+import { HistoryControl } from './HistoryControl.jsx'
 import { CrazyCombos } from './CrazyCombos.jsx'
 
 /**
@@ -16,7 +16,7 @@ import { CrazyCombos } from './CrazyCombos.jsx'
  * Crazy Combo only adds payout bars below — HUD shifts up, nothing jumps.
  */
 export function MidControls({
-  accessory,
+  accessory: _accessory,
   onAccessoryChange,
   selectedPositions,
   onSelectPosition,
@@ -35,31 +35,10 @@ export function MidControls({
   return (
     <div className={`mid-controls-stack${crazyCombo ? ' is-crazy' : ''}`}>
       <div className="mid-controls">
-        <div
-          className={`mid-controls__history-slot${historyOpen ? ' is-open' : ''}`}
-        >
-          <button
-            type="button"
-            className={`mid-controls__history${historyOpen ? ' is-open' : ''}`}
-            style={{ backgroundImage: `url(${uiAssets.hatsGlassesBar})` }}
-            aria-expanded={historyOpen}
-            onClick={() => onHistoryOpenChange?.(!historyOpen)}
-          >
-            <span className="mid-controls__history-handle" aria-hidden="true">
-              <img
-                src={uiAssets.scrollPositionThumb}
-                alt=""
-                draggable={false}
-              />
-            </span>
-            HISTORY
-          </button>
-          <HistoryPanel open={historyOpen} />
-        </div>
+        <HistoryControl open={historyOpen} onOpenChange={onHistoryOpenChange} />
 
         <div className="mid-controls__accessories">
           {DOOF_ACCESSORIES.map((item) => {
-            const selected = accessory === item
             const stack = bets.find(
               (bet) =>
                 bet.target.type === 'accessory' &&
@@ -72,23 +51,19 @@ export function MidControls({
               <button
                 key={item}
                 type="button"
-                className={`mid-controls__accessory${selected ? ' is-selected' : ''}`}
+                className="mid-controls__accessory"
                 style={{ backgroundImage: `url(${uiAssets.hatsGlassesBar})` }}
                 disabled={disabled}
-                aria-pressed={selected}
                 data-bet-drop={JSON.stringify(target)}
                 onPointerUp={(event) => {
                   if (disabled || event.button !== 0) return
-                  if (onPlaceBet) {
-                    onPlaceBet(target)
-                    return
-                  }
-                  onAccessoryChange(selected ? null : item)
+                  if (onPlaceBet) onPlaceBet(target)
+                  onAccessoryChange?.(item)
                 }}
                 onClick={(event) => {
                   if (disabled || event.detail !== 0) return
                   if (onPlaceBet) onPlaceBet(target)
-                  else onAccessoryChange(selected ? null : item)
+                  onAccessoryChange?.(item)
                 }}
               >
                 <span className="mid-controls__accessory-label">{item}</span>

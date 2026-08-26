@@ -19,13 +19,17 @@ export function useViewerSession() {
 
   useEffect(() => {
     const controller = new AbortController()
+    const key = reloadKey
 
     fetchViewerSession({ signal: controller.signal })
       .then((session) => {
+        if (controller.signal.aborted) return
         setResult({ status: 'ready', session, error: null })
       })
       .catch((err) => {
         if (controller.signal.aborted) return
+        // Ignore AbortError from a superseded reload.
+        if (err?.name === 'AbortError') return
         setResult({
           status: 'error',
           session: null,
@@ -33,7 +37,11 @@ export function useViewerSession() {
         })
       })
 
-    return () => controller.abort()
+    return () => {
+      // Key captured so Strict Mode remounts of the same reload still abort.
+      void key
+      controller.abort()
+    }
   }, [reloadKey])
 
   return {

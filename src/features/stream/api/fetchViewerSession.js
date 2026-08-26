@@ -9,12 +9,21 @@ export async function fetchViewerSession({
   tokenUrl = import.meta.env.VITE_LIVEKIT_TOKEN_URL ?? DEFAULT_TOKEN_URL,
   signal,
 } = {}) {
+  if (!tokenUrl) {
+    throw new Error(
+      'LiveKit token URL is not configured (set VITE_LIVEKIT_TOKEN_URL)',
+    )
+  }
+
   const url = `${tokenUrl}?ts=${Date.now()}`
   const response = await fetch(url, { signal })
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}))
-    throw new Error(body.error || `Token endpoint returned ${response.status}`)
+    throw new Error(
+      body.error ||
+        `Stream token unavailable (${response.status}). Check VITE_LIVEKIT_TOKEN_URL / proxy.`,
+    )
   }
 
   const data = await response.json()

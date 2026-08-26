@@ -1,4 +1,4 @@
-import logoUrl from '../../../assets/brand/astudio-gaming-logo.png'
+import logoUrl from '../../../assets/brand/astudio-gaming-logo.webp'
 
 /**
  * Centered astudio GAMING mark used on boot / connect screens.

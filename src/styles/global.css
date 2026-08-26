@@ -13,3 +13,25 @@ body,
 *::after {
   box-sizing: border-box;
 }
+
+:root {
+  --z-stream: 0;
+  --z-overlay: 10;
+  --z-overlay-chrome: 15;
+  --z-overlay-sheet: 18;
+  --z-loading: 25;
+  --z-banner: 28;
+  --z-flights: 30;
+  --z-drag-ghost: 35;
+  --z-modal: 40;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

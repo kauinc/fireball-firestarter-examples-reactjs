@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
 /**
- * HUD viewport metrics.
+ * HUD viewport metrics (single shared window/visualViewport subscription).
  * Desktop: fit 1200×640 (board + HISTORY rail).
  * Compact landscape / portrait: fit narrower footprints used by mobile.css.
  */
@@ -13,31 +13,21 @@ export const HUD_DESIGN = Object.freeze({
   portraitWidth: 390,
   portraitHeight: 720,
   compactBreakpoint: 900,
-  maxScale: 1.15,
+  maxScale: 1.0,
   minScale: 0.35,
   pad: 10,
 })
 
-/** @type {{ scale: number, compact: boolean, orientation: 'portrait' | 'landscape' }} */
-let cachedViewport = Object.freeze({
+const SERVER_VIEWPORT = Object.freeze({
   scale: 1,
   compact: false,
   orientation: 'landscape',
 })
 
-function subscribeToViewport(onChange) {
-  window.addEventListener('resize', onChange)
-  window.addEventListener('orientationchange', onChange)
-  const vv = window.visualViewport
-  vv?.addEventListener('resize', onChange)
-  vv?.addEventListener('scroll', onChange)
-  return () => {
-    window.removeEventListener('resize', onChange)
-    window.removeEventListener('orientationchange', onChange)
-    vv?.removeEventListener('resize', onChange)
-    vv?.removeEventListener('scroll', onChange)
-  }
-}
+/** @type {{ scale: number, compact: boolean, orientation: 'portrait' | 'landscape' }} */
+let snapshot = SERVER_VIEWPORT
+const listeners = new Set()
+let windowBound = false
 
 function computeHudViewport() {
   const vv = window.visualViewport
@@ -78,31 +68,59 @@ function computeHudViewport() {
   return { scale, compact, orientation }
 }
 
-function readHudViewport() {
+function refreshViewport() {
   const next = computeHudViewport()
   if (
-    next.scale === cachedViewport.scale &&
-    next.compact === cachedViewport.compact &&
-    next.orientation === cachedViewport.orientation
+    next.scale === snapshot.scale &&
+    next.compact === snapshot.compact &&
+    next.orientation === snapshot.orientation
   ) {
-    return cachedViewport
+    return
   }
-  cachedViewport = Object.freeze(next)
-  return cachedViewport
+  snapshot = Object.freeze(next)
+  for (const listener of listeners) listener()
 }
 
-const SERVER_VIEWPORT = Object.freeze({
-  scale: 1,
-  compact: false,
-  orientation: 'landscape',
-})
+function ensureWindowBound() {
+  if (windowBound || typeof window === 'undefined') return
+  windowBound = true
+  window.addEventListener('resize', refreshViewport)
+  window.addEventListener('orientationchange', refreshViewport)
+  const vv = window.visualViewport
+  vv?.addEventListener('resize', refreshViewport)
+  vv?.addEventListener('scroll', refreshViewport)
+  refreshViewport()
+}
+
+function releaseWindowBound() {
+  if (!windowBound || listeners.size > 0) return
+  windowBound = false
+  window.removeEventListener('resize', refreshViewport)
+  window.removeEventListener('orientationchange', refreshViewport)
+  const vv = window.visualViewport
+  vv?.removeEventListener('resize', refreshViewport)
+  vv?.removeEventListener('scroll', refreshViewport)
+}
+
+function subscribe(listener) {
+  listeners.add(listener)
+  ensureWindowBound()
+  return () => {
+    listeners.delete(listener)
+    releaseWindowBound()
+  }
+}
+
+function getSnapshot() {
+  return snapshot
+}
+
+function getServerSnapshot() {
+  return SERVER_VIEWPORT
+}
 
 export function useHudViewport() {
-  return useSyncExternalStore(
-    subscribeToViewport,
-    readHudViewport,
-    () => SERVER_VIEWPORT,
-  )
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }
 
 export function useHudScale() {

@@ -1,10 +1,12 @@
 import { supabase } from './client.js'
+import { RoundState } from '../../domain/round/roundStates.js'
 
 const ROUND_COLUMNS = [
   'id',
   'round_number',
   'status',
   'created_at',
+  'updated_at',
   'betting_closed_at',
   'race_started_at',
   'finished_at',
@@ -16,6 +18,20 @@ const ROUND_COLUMNS = [
 ].join(',')
 
 const REALTIME_CHANNEL_PREFIX = 'rounds_realtime'
+
+/** Later statuses win for the same round id (guards stale Realtime/REST). */
+const STATUS_RANK = Object.freeze({
+  [RoundState.ROUND_NONE]: 0,
+  [RoundState.ROUND_CREATED]: 1,
+  [RoundState.BETTING_OPEN]: 2,
+  [RoundState.BETTING_CLOSED]: 3,
+  [RoundState.TRACK_READY]: 4,
+  [RoundState.RACE_RUNNING]: 5,
+  [RoundState.RESULTS_SENT]: 6,
+  [RoundState.ROUND_COMPLETED]: 7,
+  [RoundState.ROUND_CANCELLED_OPERATOR]: 7,
+  [RoundState.ROUND_CANCELLED_RUNTIME]: 7,
+})
 
 /**
  * Latest round by round_number (Unreal writes here).
@@ -32,16 +48,37 @@ export async function fetchLatestRound() {
   return { data: data ?? null, error: error ?? null }
 }
 
+function statusRank(status) {
+  if (typeof status !== 'string') return -1
+  return STATUS_RANK[status] ?? -1
+}
+
+function updatedAtMs(row) {
+  const raw = row?.updated_at ?? row?.created_at
+  if (typeof raw !== 'string') return 0
+  const ms = Date.parse(raw)
+  return Number.isFinite(ms) ? ms : 0
+}
+
 /**
  * Whether `next` should replace `current` as the active round snapshot.
- * Same id → always apply (status PATCH). Newer round_number → switch.
+ * - Newer round_number wins.
+ * - Same id: prefer later status rank, then later updated_at.
+ * - Malformed round_number: reject (do not overwrite a valid current).
+ *
  * @param {Record<string, unknown> | null | undefined} next
  * @param {Record<string, unknown> | null | undefined} current
  */
 export function shouldApplyRound(next, current) {
   if (!next?.id) return false
   if (!current?.id) return true
-  if (next.id === current.id) return true
+
+  if (next.id === current.id) {
+    const nextRank = statusRank(next.status)
+    const curRank = statusRank(current.status)
+    if (nextRank !== curRank) return nextRank >= curRank
+    return updatedAtMs(next) >= updatedAtMs(current)
+  }
 
   const nextNum = Number(next.round_number)
   const curNum = Number(current.round_number)
@@ -49,7 +86,8 @@ export function shouldApplyRound(next, current) {
     return nextNum >= curNum
   }
 
-  return true
+  // Do not replace a known round with a malformed row.
+  return false
 }
 
 /** @type {{
@@ -93,10 +131,6 @@ function ensureRoundsRealtime() {
 /**
  * Realtime INSERT/UPDATE on `public.rounds` (shared channel, no poll).
  * Safe to call from multiple hooks — listeners are multiplexed.
- *
- * Why shared: BettingOverlay + RaceOverlay both use `useCurrentRound()`. Two
- * `supabase.channel(rounds_realtime_${Date.now()})` calls in the same ms reuse
- * one channel; the second `.on()` after `.subscribe()` throws.
  *
  * @param {(payload: { eventType: string, new: Record<string, unknown> | null }) => void} onChange
  * @param {(status: string, error: Error | null) => void} [onStatus]

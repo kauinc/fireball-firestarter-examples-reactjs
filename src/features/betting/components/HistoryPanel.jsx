@@ -1,21 +1,22 @@
-import { useMemo } from 'react'
 import { POSITION_OPTIONS } from '../constants/doofs.js'
-import { pickRandomDoofUrls } from '../assets/doofImages.js'
 import { uiAssets } from '../assets/uiAssets.js'
-
-const HISTORY_ROWS = 10
+import { useRaceHistory } from '../state/historyStore.js'
 
 /**
  * Round history sheet (10 × 1st/2nd/3rd) over the History bar asset.
- * Placeholder random roster until live results are wired.
+ * Reads shared history store; supports insert / shift / exit animations.
  */
-export function HistoryPanel({ open }) {
-  const cells = useMemo(() => {
-    if (!open) return []
-    return pickRandomDoofUrls(HISTORY_ROWS * POSITION_OPTIONS.length)
-  }, [open])
+export function HistoryPanel({ open, panelRef = null, landed = false }) {
+  const { rows, anim } = useRaceHistory()
 
   if (!open) return null
+
+  const inserting = anim.phase === 'inserting'
+  const visible = rows.slice(0, 10)
+  const exitingRow =
+    inserting && anim.exitingId
+      ? rows.find((r) => r.id === anim.exitingId)
+      : null
 
   return (
     <div className="history-sheet">
@@ -26,28 +27,66 @@ export function HistoryPanel({ open }) {
       </div>
 
       <div
-        className="history-panel"
+        ref={panelRef}
+        className={`history-panel${inserting ? ' is-inserting' : ''}${landed ? ' is-landed' : ''}`}
         role="table"
         aria-label="Round history"
         style={{ backgroundImage: `url(${uiAssets.historyBar})` }}
       >
-        {Array.from({ length: HISTORY_ROWS }, (_, row) => (
-          <div key={row} className="history-panel__row" role="row">
-            {POSITION_OPTIONS.map((pos, col) => {
-              const src = cells[row * POSITION_OPTIONS.length + col]
-              return (
-                <div
-                  key={`${row}-${pos}`}
-                  className="history-panel__cell"
-                  role="cell"
-                >
-                  {src ? <img src={src} alt="" draggable={false} /> : null}
-                </div>
-              )
-            })}
+        <div className="history-panel__viewport">
+          {visible.map((row) => (
+            <HistoryRow
+              key={row.id}
+              row={row}
+              isEntering={inserting && row.id === anim.insertingId}
+              isShifting={
+                inserting &&
+                row.id !== anim.insertingId &&
+                row.id !== anim.exitingId
+              }
+            />
+          ))}
+        </div>
+        {exitingRow ? (
+          <div className="history-panel__exit-slot" aria-hidden="true">
+            <HistoryRow key={exitingRow.id} row={exitingRow} isExiting />
           </div>
-        ))}
+        ) : null}
       </div>
+    </div>
+  )
+}
+
+function HistoryRow({
+  row,
+  isEntering = false,
+  isShifting = false,
+  isExiting = false,
+}) {
+  const className = [
+    'history-panel__row',
+    isEntering ? 'is-entering' : '',
+    isShifting ? 'is-shifting' : '',
+    isExiting ? 'is-exiting' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  return (
+    <div className={className} role="row" data-history-row={row.id}>
+      {POSITION_OPTIONS.map((pos) => {
+        const src = row.places?.[pos]
+        return (
+          <div
+            key={pos}
+            className="history-panel__cell"
+            role="cell"
+            data-history-cell={`${row.id}:${pos}`}
+          >
+            {src ? <img src={src} alt="" draggable={false} /> : null}
+          </div>
+        )
+      })}
     </div>
   )
 }

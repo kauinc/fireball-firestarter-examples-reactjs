@@ -16,9 +16,9 @@
 
   position: absolute;
   inset: 0;
-  z-index: 10;
+  z-index: var(--z-overlay, 10);
   pointer-events: none;
-  overflow: hidden;
+  overflow: visible;
   font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
   color: var(--bet-text);
   -webkit-text-size-adjust: 100%;
@@ -108,12 +108,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 46vh;
+  height: 36vh;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(0, 0, 0, 0.42) 32%,
-    rgba(0, 0, 0, 0.84) 100%
+    rgba(0, 0, 0, 0.22) 40%,
+    rgba(0, 0, 0, 0.55) 100%
   );
   pointer-events: none;
   z-index: 0;
