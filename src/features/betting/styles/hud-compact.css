@@ -26,16 +26,6 @@
 }
 
 :is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
-  .betting-overlay__menu-top {
-  display: grid;
-}
-
-:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
-  .betting-footer__menu {
-  display: none;
-}
-
-:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
   .betting-overlay__fullscreen {
   top: max(10px, env(safe-area-inset-top, 0px));
   left: max(10px, env(safe-area-inset-left, 0px));
@@ -43,7 +33,18 @@
   bottom: auto;
   width: calc(40px * var(--hud-scale));
   height: calc(40px * var(--hud-scale));
-  z-index: var(--z-overlay-chrome);
+  z-index: var(--z-overlay-chrome, 22);
+}
+
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
+  .betting-overlay__menu-top {
+  display: grid;
+  z-index: var(--z-overlay-chrome, 22);
+}
+
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
+  .betting-footer__menu {
+  display: none;
 }
 
 :is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
