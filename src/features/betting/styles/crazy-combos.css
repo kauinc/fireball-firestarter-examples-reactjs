@@ -30,6 +30,16 @@
   transform: translateY(calc(-18px * var(--hud-scale)));
 }
 
+/* Compact / portrait: keep Hats→combo DOM order (no desktop Y nudge). */
+:is(.betting-overlay, .race-overlay)[data-compact='true']
+  .mid-controls-stack
+  .mid-controls,
+:is(.betting-overlay, .race-overlay)[data-compact='true']
+  .mid-controls-stack.is-crazy
+  .mid-controls {
+  transform: none;
+}
+
 .crazy-combos-row {
   display: flex;
   align-items: flex-end;

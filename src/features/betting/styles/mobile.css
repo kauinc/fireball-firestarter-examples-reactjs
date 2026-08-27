@@ -8,7 +8,7 @@
   position: absolute;
   top: max(10px, env(safe-area-inset-top, 0px));
   right: max(10px, env(safe-area-inset-right, 0px));
-  z-index: var(--z-overlay-chrome, 15);
+  z-index: var(--z-overlay-chrome, 22);
   width: calc(48px * var(--hud-scale));
   height: calc(48px * var(--hud-scale));
   border: 0;
@@ -42,11 +42,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: calc(12px * var(--hud-scale));
+  gap: calc(8px * var(--hud-scale));
   width: 100%;
   max-width: 100%;
+  min-width: 0;
 }
 
+/* Stack: table → Hats/Glasses/Positions (+ combo) → footer */
 .betting-overlay[data-orient='portrait'] .doof-grid {
   grid-template-columns:
     calc(58px * var(--hud-scale))
@@ -56,6 +58,8 @@
   row-gap: 0;
   column-gap: calc(2px * var(--hud-scale));
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   order: 1;
 }
 
@@ -81,7 +85,8 @@
   );
   left: 50%;
   transform: translateX(-50%);
-  z-index: var(--z-overlay-sheet, 18);
+  /* Below menu / fullscreen chrome */
+  z-index: var(--z-overlay-sheet, 12);
   width: var(--history-sheet-w);
   pointer-events: none;
 }
@@ -104,13 +109,66 @@
   z-index: var(--z-banner, 28);
 }
 
-.betting-overlay[data-orient='portrait'] .mid-controls {
-  justify-content: center;
-  gap: calc(10px * var(--hud-scale));
+.betting-overlay[data-orient='portrait'] .mid-controls-stack {
+  order: 2;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: calc(6px * var(--hud-scale));
+  transform: none;
+}
+
+.betting-overlay[data-orient='portrait'] .mid-controls {
+  order: 0;
+  justify-content: center;
+  gap: calc(6px * var(--hud-scale));
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   transform: none;
   padding-left: 0;
-  order: 2;
+  flex-wrap: nowrap;
+}
+
+.betting-overlay[data-orient='portrait'] .mid-controls__accessories {
+  width: auto;
+  flex: 1 1 auto;
+  max-width: min(calc(220px * var(--hud-scale)), 58%);
+  min-width: 0;
+  gap: calc(6px * var(--hud-scale));
+}
+
+.betting-overlay[data-orient='portrait'] .mid-controls__accessory {
+  min-width: 0;
+  flex: 1 1 0;
+  height: calc(44px * var(--hud-scale));
+  font-size: calc(11px * var(--hud-scale));
+  padding: 0 calc(8px * var(--hud-scale));
+}
+
+.betting-overlay[data-orient='portrait'] .mid-controls__accessory-icon {
+  width: calc(28px * var(--hud-scale));
+  height: calc(28px * var(--hud-scale));
+}
+
+.betting-overlay[data-orient='portrait'] .mid-controls__positions {
+  width: calc(140px * var(--hud-scale));
+  max-width: 42%;
+  flex: 0 1 auto;
+  min-width: 0;
+  transform: none;
+}
+
+.betting-overlay[data-orient='portrait'] .crazy-combos-row {
+  order: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.betting-overlay[data-orient='portrait'][data-advanced='true']
+  .betting-overlay__hud {
+  gap: calc(6px * var(--hud-scale));
 }
 
 .betting-overlay[data-orient='portrait'] .betting-footer {
@@ -122,11 +180,11 @@
     'bal combo total';
   align-items: end;
   column-gap: calc(8px * var(--hud-scale));
-  row-gap: calc(10px * var(--hud-scale));
+  row-gap: calc(8px * var(--hud-scale));
   width: 100%;
   max-width: 100%;
   margin: 0;
-  padding-top: calc(4px * var(--hud-scale));
+  padding-top: calc(2px * var(--hud-scale));
 }
 
 .betting-overlay[data-orient='portrait'] .betting-footer__tray {

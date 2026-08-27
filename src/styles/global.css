@@ -17,8 +17,8 @@ body,
 :root {
   --z-stream: 0;
   --z-overlay: 10;
-  --z-overlay-chrome: 15;
-  --z-overlay-sheet: 18;
+  --z-overlay-sheet: 12;
+  --z-overlay-chrome: 22;
   --z-loading: 25;
   --z-banner: 28;
   --z-flights: 30;
