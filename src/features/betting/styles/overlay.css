@@ -3,6 +3,21 @@
  * gold timer top-center, betting HUD calibrated for 1024×576 base.
  */
 
+:is(.betting-overlay, .race-overlay, .settlement-overlay),
+:is(.betting-overlay, .race-overlay, .settlement-overlay) * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+:is(.betting-overlay, .race-overlay, .settlement-overlay) {
+  --hud-font-scale: var(--hud-scale);
+}
+
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true'] {
+  --hud-font-scale: calc(var(--hud-scale) * 0.82);
+}
+
 .betting-overlay {
   --bet-gold: #e8c85a;
   --bet-text: #ffffff;
@@ -44,7 +59,7 @@
 
 .betting-banner__label {
   margin: 0;
-  font-size: calc(18px * var(--hud-scale));
+  font-size: calc(18px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -73,7 +88,7 @@
 }
 
 .betting-banner__value {
-  font-size: calc(22px * var(--hud-scale));
+  font-size: calc(22px * var(--hud-font-scale));
   font-weight: 800;
   line-height: 1;
   color: #fff;

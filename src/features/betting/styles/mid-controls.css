@@ -52,7 +52,7 @@
   background-repeat: no-repeat;
   color: var(--bet-text);
   font: inherit;
-  font-size: calc(13px * var(--hud-scale));
+  font-size: calc(13px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -110,7 +110,7 @@
   grid-template-columns: repeat(3, 1fr);
   align-items: end;
   text-align: center;
-  font-size: calc(9px * var(--hud-scale));
+  font-size: calc(9px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.02em;
   color: rgba(255, 255, 255, 0.95);
@@ -254,7 +254,7 @@
   background-repeat: no-repeat;
   color: var(--bet-text);
   font: inherit;
-  font-size: calc(12px * var(--hud-scale));
+  font-size: calc(12px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -310,7 +310,7 @@
   top: calc(10px * var(--hud-scale));
   display: block;
   margin-bottom: calc(3px * var(--hud-scale));
-  font-size: calc(7px * var(--hud-scale));
+  font-size: calc(7px * var(--hud-font-scale));
   letter-spacing: 0.08em;
   color: #fff;
   line-height: 1.15;
@@ -339,15 +339,16 @@
   pointer-events: none;
 }
 
-/* The fill occupies the complete inner frame without crossing its border. */
+/* Match the visible bounds inside frame-position-bar.png. */
 .mid-controls__positions-track {
   position: absolute;
-  left: calc(9px * var(--hud-scale));
-  right: calc(9px * var(--hud-scale));
-  top: calc(9px * var(--hud-scale));
-  bottom: calc(9px * var(--hud-scale));
+  left: 4%;
+  right: 4%;
+  top: calc(10px * var(--hud-scale));
+  bottom: calc(10px * var(--hud-scale));
   z-index: 0;
   overflow: hidden;
+  border-radius: calc(8px * var(--hud-scale));
 }
 
 .mid-controls__positions-fill {
@@ -356,25 +357,18 @@
   top: 0;
   bottom: 0;
   width: 33.333%;
-  overflow: visible;
+  overflow: hidden;
   pointer-events: none;
   transition: width 160ms ease;
-}
-
-.mid-controls__positions-fill-clip {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.mid-controls__positions-fill-art {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: left center;
+  border-radius: calc(10px * var(--hud-scale));
+  background: linear-gradient(
+    180deg,
+    #647788 0%,
+    #5e7181 48%,
+    #596c7c 100%
+  );
+  box-shadow: inset 0 0 0 calc(2px * var(--hud-scale))
+    rgba(235, 239, 244, 0.82);
 }
 
 .mid-controls__position-tabs {
@@ -394,7 +388,7 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.45);
   font: inherit;
-  font-size: calc(12px * var(--hud-scale));
+  font-size: calc(12px * var(--hud-font-scale));
   font-weight: 800;
   padding: calc(2px * var(--hud-scale)) calc(4px * var(--hud-scale));
   min-width: calc(28px * var(--hud-scale));

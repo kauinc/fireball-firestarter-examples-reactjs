@@ -1,7 +1,6 @@
 import { DOOF_ACCESSORIES, POSITION_OPTIONS } from '../constants/doofs.js'
 import {
   maxSelectedPosition,
-  POSITION_FILL_ART_WIDTH,
   POSITION_FILL_WIDTH,
   POSITION_THUMB_LEFT,
 } from '../constants/positions.js'
@@ -29,8 +28,6 @@ export function MidControls({
 }) {
   const thumbPos = maxSelectedPosition(selectedPositions)
   const fillWidth = POSITION_FILL_WIDTH[thumbPos] || POSITION_FILL_WIDTH['1st']
-  const fillArtWidth =
-    POSITION_FILL_ART_WIDTH[thumbPos] || POSITION_FILL_ART_WIDTH['1st']
 
   return (
     <div className={`mid-controls-stack${crazyCombo ? ' is-crazy' : ''}`}>
@@ -95,19 +92,10 @@ export function MidControls({
               <div className="mid-controls__positions-track">
                 <div
                   className="mid-controls__positions-fill"
+                  data-pos={thumbPos}
                   style={{ width: fillWidth }}
-                >
-                  <span className="mid-controls__positions-fill-clip">
-                    <span
-                      className="mid-controls__positions-fill-art"
-                      style={{
-                        backgroundImage: `url(${uiAssets.scrollPositionBar})`,
-                        width: fillArtWidth,
-                      }}
-                      aria-hidden="true"
-                    />
-                  </span>
-                </div>
+                  aria-hidden="true"
+                />
               </div>
 
               <div className="mid-controls__position-tabs">

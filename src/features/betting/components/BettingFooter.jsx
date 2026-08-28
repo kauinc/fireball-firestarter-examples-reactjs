@@ -44,10 +44,7 @@ export function BettingFooter({
           aria-label={switchLabel}
           onClick={onToggleCrazyCombo}
         >
-          <span
-            className="betting-footer__switch"
-            style={{ backgroundImage: `url(${uiAssets.toggleFrame})` }}
-          >
+          <span className="betting-footer__switch">
             <img
               src={uiAssets.activeToggle}
               alt=""
@@ -58,6 +55,12 @@ export function BettingFooter({
               src={uiAssets.toggleSlide}
               alt=""
               className="betting-footer__knob"
+              draggable={false}
+            />
+            <img
+              src={uiAssets.toggleFrame}
+              alt=""
+              className="betting-footer__switch-frame"
               draggable={false}
             />
           </span>

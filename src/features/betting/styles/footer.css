@@ -18,7 +18,7 @@
 .betting-footer__caption {
   display: block;
   margin-bottom: calc(2px * var(--hud-scale));
-  font-size: calc(10px * var(--hud-scale));
+  font-size: calc(10px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.06em;
   color: var(--bet-text);
@@ -56,7 +56,7 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
-  font-size: calc(14px * var(--hud-scale));
+  font-size: calc(14px * var(--hud-font-scale));
   font-weight: 800;
   line-height: 1;
 }
@@ -71,36 +71,46 @@
 .betting-footer__switch {
   position: relative;
   display: block;
-  width: calc(80px * var(--hud-scale));
-  height: calc(40px * var(--hud-scale));
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
+  width: calc(56px * var(--hud-scale));
+  height: calc(28px * var(--hud-scale));
 }
 
 .betting-footer__switch::before {
   content: '';
   position: absolute;
-  inset: calc(4px * var(--hud-scale));
+  inset: calc(3px * var(--hud-scale));
   border-radius: 999px;
-  background: linear-gradient(180deg, #f2f2f2 0%, #9d9d9d 100%);
-  box-shadow: inset 0 0 calc(5px * var(--hud-scale)) rgba(0, 0, 0, 0.38);
+  background: linear-gradient(180deg, #ededed 0%, #b8b8b8 42%, #999 100%);
+  box-shadow:
+    inset 0 calc(2px * var(--hud-scale)) calc(5px * var(--hud-scale))
+      rgba(255, 255, 255, 0.42),
+    inset 0 calc(-2px * var(--hud-scale)) calc(5px * var(--hud-scale))
+      rgba(0, 0, 0, 0.3);
   pointer-events: none;
 }
 
 .betting-footer__switch-active {
   position: absolute;
-  left: calc(4px * var(--hud-scale));
-  right: calc(4px * var(--hud-scale));
-  top: calc(4px * var(--hud-scale));
-  bottom: calc(4px * var(--hud-scale));
-  width: calc(72px * var(--hud-scale));
-  height: calc(32px * var(--hud-scale));
+  left: calc(3px * var(--hud-scale));
+  top: calc(3px * var(--hud-scale));
+  width: calc(50px * var(--hud-scale));
+  height: calc(22px * var(--hud-scale));
   opacity: 0;
   transition: opacity 160ms ease;
   pointer-events: none;
   object-fit: fill;
   z-index: 1;
+}
+
+.betting-footer__switch-frame {
+  position: absolute;
+  left: calc(-6px * var(--hud-scale));
+  top: calc(-5px * var(--hud-scale));
+  z-index: 3;
+  width: calc(68px * var(--hud-scale));
+  height: calc(38px * var(--hud-scale));
+  object-fit: fill;
+  pointer-events: none;
 }
 
 .betting-footer__combo.is-on .betting-footer__switch-active {
@@ -110,18 +120,17 @@
 .betting-footer__knob {
   position: absolute;
   top: 50%;
-  left: calc(8px * var(--hud-scale));
-  width: calc(30px * var(--hud-scale));
-  height: calc(24px * var(--hud-scale));
+  left: calc(5px * var(--hud-scale));
+  width: calc(24px * var(--hud-scale));
+  height: calc(18px * var(--hud-scale));
   transform: translateY(-50%);
   transition: left 160ms ease;
   object-fit: fill;
-  border-radius: 50%;
   z-index: 2;
 }
 
 .betting-footer__combo.is-on .betting-footer__knob {
-  left: calc(42px * var(--hud-scale));
+  left: calc(27px * var(--hud-scale));
 }
 
 .betting-footer__round {
@@ -135,7 +144,7 @@
   background-position: center;
   color: var(--bet-text);
   font: inherit;
-  font-size: calc(9px * var(--hud-scale));
+  font-size: calc(9px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -161,7 +170,7 @@
   touch-action: none;
   color: #fff;
   font: inherit;
-  font-size: calc(12px * var(--hud-scale));
+  font-size: calc(12px * var(--hud-font-scale));
   font-weight: 800;
   line-height: 1;
 }
@@ -241,7 +250,7 @@
   display: grid;
   place-items: center;
   color: #fff;
-  font-size: calc(11px * var(--hud-scale));
+  font-size: calc(11px * var(--hud-font-scale));
   font-weight: 800;
   line-height: 1;
   -webkit-text-stroke: calc(0.8px * var(--hud-scale)) #111;

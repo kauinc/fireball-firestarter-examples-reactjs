@@ -7,7 +7,7 @@ import { uiAssets } from '../../betting/assets/uiAssets.js'
 import { formatMoney } from '../../betting/utils/formatMoney.js'
 import { useCurrentRound } from '../../betting/hooks/useCurrentRound.js'
 import { useFullscreen } from '../../betting/hooks/useFullscreen.js'
-import { useHudViewport } from '../../betting/hooks/useHudScale.js'
+import { useHudViewportContext } from '../../hud/index.js'
 import { usePublishedRoundBets } from '../../betting/state/roundBetsStore.js'
 import { useSettlementOverlayState } from '../hooks/useSettlementOverlay.js'
 import { useChipSettleAnimation } from '../hooks/useChipSettleAnimation.js'
@@ -27,7 +27,7 @@ import '../styles/settlement.css'
  * Chips resolve roulette-style; podium icons fly into HISTORY.
  */
 export function SettlementOverlay({ balance = DEFAULT_BALANCE }) {
-  const { scale: viewportScale, compact, orientation } = useHudViewport()
+  const { scale: viewportScale, compact, orientation } = useHudViewportContext()
   const { round, status } = useCurrentRound()
   const { isFullscreen, toggleFullscreen } = useFullscreen()
   const { roundId: betsRoundId, bets } = usePublishedRoundBets()

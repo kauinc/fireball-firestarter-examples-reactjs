@@ -3,6 +3,7 @@ import { BettingOverlay } from '../../betting/index.js'
 import { RaceOverlay } from '../../race/index.js'
 import { SettlementOverlay } from '../../settlement/index.js'
 import { LoadingScreen, LoadingStatus } from '../../loading/index.js'
+import { HudViewportProvider } from '../../hud/index.js'
 import { useCurrentRound } from '../../betting/hooks/useCurrentRound.js'
 import { RoundState } from '../../../domain/round/index.js'
 import { useViewerSession } from '../hooks/useViewerSession.js'
@@ -105,9 +106,11 @@ export function StreamPage() {
         />
       </Suspense>
 
-      <BettingOverlay key="betting-round" />
-      <RaceOverlay key="race-round" />
-      <SettlementOverlay key="settlement-round" />
+      <HudViewportProvider>
+        <BettingOverlay key="betting-round" />
+        <RaceOverlay key="race-round" />
+        <SettlementOverlay key="settlement-round" />
+      </HudViewportProvider>
     </div>
   )
 }

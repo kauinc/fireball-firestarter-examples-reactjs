@@ -33,7 +33,7 @@
 }
 
 .settlement-podium__place {
-  font-size: calc(28px * var(--hud-scale));
+  font-size: calc(28px * var(--hud-font-scale));
   font-weight: 800;
   line-height: 1;
   color: #fff;
@@ -41,7 +41,7 @@
 }
 
 .settlement-podium__time {
-  font-size: calc(16px * var(--hud-scale));
+  font-size: calc(16px * var(--hud-font-scale));
   font-weight: 800;
   line-height: 1;
   color: var(--podium-accent, #fff);

@@ -20,7 +20,7 @@
 }
 
 .settlement-win__label {
-  font-size: calc(13px * var(--hud-scale));
+  font-size: calc(13px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.1em;
   line-height: 1;
@@ -45,7 +45,7 @@
 }
 
 .settlement-win__amount {
-  font-size: calc(26px * var(--hud-scale));
+  font-size: calc(26px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.02em;
   line-height: 1;
