@@ -8,7 +8,6 @@ import { useCurrentRound } from '../hooks/useCurrentRound.js'
 import { useBettingOverlayState } from '../hooks/useBettingOverlayState.js'
 import { useChipBets } from '../hooks/useChipBets.js'
 import { useChipDrag } from '../hooks/useChipDrag.js'
-import { useHudViewport } from '../hooks/useHudScale.js'
 import { useFullscreen } from '../hooks/useFullscreen.js'
 import { uiAssets } from '../assets/uiAssets.js'
 import { positionsUpTo } from '../constants/positions.js'
@@ -16,6 +15,7 @@ import {
   HudFade,
   HudFullscreenButton,
   HudMenuChrome,
+  useHudViewportContext,
 } from '../../hud/index.js'
 import '../styles/betting.css'
 
@@ -192,7 +192,7 @@ function BettingRoundSession({
  * Advanced Menu toggles HISTORY (landscape left / portrait top table) + Hats/Glasses/Positions.
  */
 export function BettingOverlay() {
-  const { scale: viewportScale, compact, orientation } = useHudViewport()
+  const { scale: viewportScale, compact, orientation } = useHudViewportContext()
   const { round, status } = useCurrentRound()
   const { phase, secondsLeft, bannerLabel, isBettingUiVisible, disabled } =
     useBettingOverlayState({ status, round })

@@ -70,6 +70,17 @@
   flex-shrink: 0;
 }
 
+.race-overlay[data-compact='true'] .race-bets-sheet__board .mid-controls-stack {
+  width: 100%;
+  max-width: 100%;
+  transform: none;
+}
+
+.race-overlay[data-orient='landscape'][data-compact='true'] .race-bets-sheet__panel {
+  width: 100%;
+  max-width: 100%;
+}
+
 .race-bets-sheet__board .crazy-combos-row {
   pointer-events: none;
 }

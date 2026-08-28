@@ -73,60 +73,83 @@
   align-items: flex-end;
 }
 
-/* Portrait Crazy Combo — betting + race CURRENT BETS sheet */
-:is(.betting-overlay, .race-overlay)[data-orient='portrait'] .crazy-combos-row {
-  width: 100%;
-  justify-content: center;
-}
-
-:is(.betting-overlay, .race-overlay)[data-orient='portrait'] .crazy-combos {
+/* Compact Crazy Combo — one row; crazy longer; stay inside HUD width */
+:is(.betting-overlay, .race-overlay)[data-compact='true'] .crazy-combos-row {
   width: 100%;
   max-width: 100%;
-  gap: calc(8px * var(--hud-scale));
-  flex-direction: column;
-  align-items: stretch;
-}
-
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
-  .crazy-combos__item--combo,
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
-  .crazy-combos__item--crazy {
-  width: 100%;
+  justify-content: center;
   min-width: 0;
-  flex: 0 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
+:is(.betting-overlay, .race-overlay)[data-compact='true'] .crazy-combos {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 100%;
+  gap: calc(6px * var(--hud-scale));
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+:is(.betting-overlay, .race-overlay)[data-compact='true']
+  .crazy-combos__item--combo {
+  flex: 0 1 36%;
+  width: auto;
+  max-width: 36%;
+  min-width: 0;
+}
+
+:is(.betting-overlay, .race-overlay)[data-compact='true']
+  .crazy-combos__item--crazy {
+  flex: 1 1 64%;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+}
+
+:is(.betting-overlay, .race-overlay)[data-compact='true']
   .crazy-combos__caption,
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
+:is(.betting-overlay, .race-overlay)[data-compact='true']
   .crazy-combos__item--crazy
   .crazy-combos__caption {
-  font-size: calc(9px * var(--hud-scale));
+  font-size: calc(8px * var(--hud-font-scale));
+  letter-spacing: 0.02em;
+  padding-right: calc(34px * var(--hud-scale));
 }
 
-:is(.betting-overlay, .race-overlay)[data-orient='portrait'] .crazy-combos__bar {
-  height: calc(28px * var(--hud-scale));
-  padding: 0 calc(10px * var(--hud-scale));
+:is(.betting-overlay, .race-overlay)[data-compact='true'] .crazy-combos__bar {
+  height: calc(26px * var(--hud-scale));
+  padding: 0 calc(6px * var(--hud-scale));
 }
 
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
+:is(.betting-overlay, .race-overlay)[data-compact='true']
+  .crazy-combos__item--crazy
+  .crazy-combos__bar--slots {
+  padding: 0 calc(8px * var(--hud-scale));
+}
+
+:is(.betting-overlay, .race-overlay)[data-compact='true']
   .crazy-combos__track {
-  padding-right: calc(48px * var(--hud-scale));
+  padding-right: calc(34px * var(--hud-scale));
+  min-width: 0;
 }
 
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
+:is(.betting-overlay, .race-overlay)[data-compact='true']
   .crazy-combos__desc,
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
+:is(.betting-overlay, .race-overlay)[data-compact='true']
   .crazy-combos__slot-label {
-  font-size: calc(9px * var(--hud-scale));
+  font-size: calc(8px * var(--hud-font-scale));
 }
 
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
+:is(.betting-overlay, .race-overlay)[data-compact='true']
   .crazy-combos__pays-label {
-  font-size: calc(7px * var(--hud-scale));
+  font-size: calc(6px * var(--hud-font-scale));
 }
 
-:is(.betting-overlay, .race-overlay)[data-orient='portrait']
+:is(.betting-overlay, .race-overlay)[data-compact='true']
   .crazy-combos__pays-value {
-  font-size: calc(11px * var(--hud-scale));
+  font-size: calc(9px * var(--hud-font-scale));
 }

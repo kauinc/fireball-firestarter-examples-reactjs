@@ -26,15 +26,24 @@
   gap: calc(8px * var(--hud-scale));
 }
 
+/*
+ * The payout row adds 57px to the stack below mid-controls. Since the HUD is
+ * bottom-anchored, counter that offset for HISTORY so its viewport position
+ * remains identical when Crazy Combo opens.
+ */
+.mid-controls-stack.is-crazy .mid-controls__history-slot {
+  transform: translateY(calc(57px * var(--hud-scale)));
+}
+
 .mid-controls-stack.is-crazy .mid-controls {
   transform: translateY(calc(-18px * var(--hud-scale)));
 }
 
 /* Compact / portrait: keep Hats→combo DOM order (no desktop Y nudge). */
-:is(.betting-overlay, .race-overlay)[data-compact='true']
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
   .mid-controls-stack
   .mid-controls,
-:is(.betting-overlay, .race-overlay)[data-compact='true']
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
   .mid-controls-stack.is-crazy
   .mid-controls {
   transform: none;
@@ -89,7 +98,7 @@
   box-sizing: border-box;
   text-align: center;
   font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
-  font-size: calc(11px * var(--hud-scale));
+  font-size: calc(11px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.06em;
   line-height: 1;
@@ -183,7 +192,7 @@
 .crazy-combos__slot-label {
   flex-shrink: 0;
   font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
-  font-size: calc(12px * var(--hud-scale));
+  font-size: calc(12px * var(--hud-font-scale));
   font-weight: 800;
   color: #fff;
   white-space: nowrap;
@@ -208,14 +217,14 @@
 }
 
 .crazy-combos__pays-label {
-  font-size: calc(8px * var(--hud-scale));
+  font-size: calc(8px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.04em;
   line-height: 1;
 }
 
 .crazy-combos__pays-value {
-  font-size: calc(14px * var(--hud-scale));
+  font-size: calc(14px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.01em;
   line-height: 1;

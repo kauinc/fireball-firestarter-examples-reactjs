@@ -43,7 +43,7 @@ export function ChipStack({ chips, className = '' }) {
             className={`chip-stack__chip${isTop ? ' is-top' : ''}`}
             style={{
               zIndex: index + 1,
-              transform: `translate(calc(${index} * 7px * var(--hud-scale)), calc(${index} * -2px * var(--hud-scale)))`,
+              transform: `translate(calc(${index} * var(--chip-stack-x, calc(7px * var(--hud-scale))) * var(--chip-stack-dir, 1)), calc(${index} * -1 * var(--chip-stack-y, calc(2px * var(--hud-scale)))))`,
             }}
           >
             {src ? <img src={src} alt="" draggable={false} /> : null}

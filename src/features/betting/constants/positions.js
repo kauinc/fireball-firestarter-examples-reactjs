@@ -1,22 +1,15 @@
 /** Fill width of All position bar inside the inset track (P1 / P2 / P3). */
 export const POSITION_FILL_WIDTH = Object.freeze({
-  '1st': '33.333%',
-  '2nd': '66.666%',
+  '1st': 'calc(33.333% + 3px * var(--hud-scale))',
+  '2nd': 'calc(66.666% + 4px * var(--hud-scale))',
   '3rd': '100%',
 })
 
-/** Pointer center at the actual edge of the inset fill track. */
+/** Pointer center at the fill edge inside the frame. */
 export const POSITION_THUMB_LEFT = Object.freeze({
-  '1st': 'calc(33.333% + 2px * var(--hud-scale))',
-  '2nd': 'calc(66.666% - 2px * var(--hud-scale))',
-  '3rd': 'calc(100% - 6px * var(--hud-scale))',
-})
-
-/** Keep the scroll-position texture full-scale; crop via fill width. */
-export const POSITION_FILL_ART_WIDTH = Object.freeze({
-  '1st': '300%',
-  '2nd': '150%',
-  '3rd': '100%',
+  '1st': 'calc(34.666% + 3px * var(--hud-scale))',
+  '2nd': 'calc(65.333% + 4px * var(--hud-scale))',
+  '3rd': '96%',
 })
 
 /**

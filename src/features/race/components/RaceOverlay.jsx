@@ -3,7 +3,7 @@ import { BettingBanner } from '../../betting/components/BettingBanner.jsx'
 import { uiAssets } from '../../betting/assets/uiAssets.js'
 import { formatMoney } from '../../betting/utils/formatMoney.js'
 import { useFullscreen } from '../../betting/hooks/useFullscreen.js'
-import { useHudViewport } from '../../betting/hooks/useHudScale.js'
+import { useHudViewportContext } from '../../hud/index.js'
 import { useCurrentRound } from '../../betting/hooks/useCurrentRound.js'
 import { usePublishedRoundBets, shouldShowRaceCrazyCombos } from '../../betting/state/roundBetsStore.js'
 import {
@@ -28,7 +28,7 @@ import '../styles/race.css'
  * Balance | CURRENT BETS | Potential Win. Open sheet = read-only board.
  */
 export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
-  const { scale: viewportScale, compact, orientation } = useHudViewport()
+  const { scale: viewportScale, compact, orientation } = useHudViewportContext()
   const { round, status } = useCurrentRound()
   const { isRaceUiVisible, raceKey, raceStartedAt } = useRaceOverlayState({
     status,

@@ -48,7 +48,7 @@
 
 .race-overlay[data-orient='portrait'] .doof-grid {
   grid-template-columns:
-    calc(58px * var(--hud-scale))
+    calc(66px * var(--hud-scale))
     minmax(0, 1fr)
     calc(44px * var(--hud-scale));
   grid-template-rows: calc(36px * var(--hud-scale)) auto;
@@ -105,7 +105,7 @@
 .race-overlay[data-orient='portrait'] .race-overlay__current-bets {
   width: calc(160px * var(--hud-scale));
   height: calc(44px * var(--hud-scale));
-  font-size: calc(11px * var(--hud-scale));
+  font-size: calc(11px * var(--hud-font-scale));
   margin-bottom: 0;
 }
 
@@ -116,24 +116,6 @@
 
 .race-overlay[data-orient='landscape'][data-compact='true'] {
   --hud-w: calc(860px * var(--hud-scale));
-}
-
-.race-overlay[data-orient='landscape'][data-compact='true'] .doof-grid {
-  grid-template-columns:
-    calc(80px * var(--hud-scale))
-    minmax(0, calc(520px * var(--hud-scale)))
-    calc(56px * var(--hud-scale));
-  max-width: calc(680px * var(--hud-scale));
-}
-
-.race-overlay[data-orient='landscape'][data-compact='true'] .mid-controls {
-  max-width: calc(680px * var(--hud-scale));
-}
-
-.race-overlay[data-orient='landscape'][data-compact='true'] .mid-controls__accessories {
-  width: auto;
-  flex: 1 1 auto;
-  max-width: calc(320px * var(--hud-scale));
 }
 
 .race-overlay[data-orient='landscape'][data-compact='true'] .betting-footer__meter {
