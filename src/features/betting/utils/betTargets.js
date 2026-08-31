@@ -25,6 +25,10 @@ export function betTargetKey(target) {
       return `color:${target.color}`
     case 'accessory':
       return `accessory:${target.accessory}`
+    case 'combo':
+      return 'combo:regular'
+    case 'crazyCombo':
+      return 'combo:crazy'
     default:
       return 'unknown'
   }
@@ -42,6 +46,10 @@ export function describeBetTarget(target) {
       return target.color
     case 'accessory':
       return target.accessory
+    case 'combo':
+      return 'Combo'
+    case 'crazyCombo':
+      return 'Crazy Combo'
     default:
       return ''
   }
@@ -161,6 +169,22 @@ export function accessoryTarget(accessory) {
     type: 'accessory',
     coverage: 9,
     accessory,
+  }
+}
+
+/** Regular COMBO bar — one stack for 1st/2nd/3rd combo payout. */
+export function comboTarget() {
+  return {
+    type: 'combo',
+    coverage: 18,
+  }
+}
+
+/** CRAZY COMBO bar — one stack when all three doofs are picked. */
+export function crazyComboTarget() {
+  return {
+    type: 'crazyCombo',
+    coverage: 18,
   }
 }
 

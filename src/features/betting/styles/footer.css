@@ -183,17 +183,6 @@
   object-fit: contain;
 }
 
-.betting-footer__chip-glow {
-  inset: 50% auto auto 50% !important;
-  width: calc(56px * var(--hud-scale)) !important;
-  height: calc(58px * var(--hud-scale)) !important;
-  transform: translate(-50%, -50%);
-  object-fit: cover !important;
-  border-radius: 50%;
-  z-index: 0;
-  pointer-events: none;
-}
-
 .betting-footer__chip span {
   position: relative;
   z-index: 1;
@@ -202,7 +191,9 @@
 }
 
 .betting-footer__chip.is-selected {
-  transform: translateY(calc(-3px * var(--hud-scale)));
+  z-index: 1;
+  transform-origin: center bottom;
+  transform: translateY(calc(-3px * var(--hud-scale))) scale(1.14);
 }
 
 .betting-footer__menu {

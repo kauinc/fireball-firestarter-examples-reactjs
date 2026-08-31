@@ -50,15 +50,6 @@
   width: 100%;
 }
 
-.race-bets-sheet__table .race-overlay__current-bets {
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  z-index: 2;
-  margin: 0 0 var(--race-current-bets-table-gap);
-  transform: translateX(-50%);
-}
-
 .race-bets-sheet__board .mid-controls__accessory {
   cursor: default;
   pointer-events: none;

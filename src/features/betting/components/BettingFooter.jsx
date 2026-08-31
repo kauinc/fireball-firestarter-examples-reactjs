@@ -80,8 +80,10 @@ export function BettingFooter({
 
         <div className="betting-footer__chips" role="group" aria-label="Chips">
           {CHIP_VALUES.map((value) => {
-            const src = uiAssets.chips[value]
             const selected = selectedChip === value
+            const src = selected
+              ? (uiAssets.chipsSelected[value] ?? uiAssets.chips[value])
+              : uiAssets.chips[value]
             return (
               <button
                 key={value}
@@ -96,14 +98,6 @@ export function BettingFooter({
                   onChipDragStart?.(event, value)
                 }}
               >
-                {selected ? (
-                  <img
-                    src={uiAssets.chipHighlighter}
-                    alt=""
-                    className="betting-footer__chip-glow"
-                    draggable={false}
-                  />
-                ) : null}
                 {src ? <img src={src} alt="" draggable={false} /> : null}
                 <span>{value}</span>
               </button>

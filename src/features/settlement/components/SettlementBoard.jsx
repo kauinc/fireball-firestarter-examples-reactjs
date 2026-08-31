@@ -1,10 +1,18 @@
 import { DoofGrid } from '../../betting/components/DoofGrid.jsx'
 import { ChipStack } from '../../betting/components/ChipStack.jsx'
+import { CrazyCombos } from '../../betting/components/CrazyCombos.jsx'
 import { HistoryControl } from '../../betting/components/HistoryControl.jsx'
 import { uiAssets } from '../../betting/assets/uiAssets.js'
 import { DOOF_ACCESSORIES } from '../../betting/constants/doofs.js'
 import { accessoryTarget } from '../../betting/utils/betTargets.js'
 import { formatMoney } from '../../betting/utils/formatMoney.js'
+import {
+  hasComboBet,
+  hasCrazyComboBet,
+  shouldShowRaceCrazyCombos,
+  usePublishedRoundBets,
+} from '../../betting/state/roundBetsStore.js'
+import '../../betting/styles/crazy-combos.css'
 
 /**
  * Read-only results board — same geometry as betting / race CURRENT BETS.
@@ -25,10 +33,18 @@ export function SettlementBoard({
   historyLanded = false,
   showHistoryControl = true,
 }) {
+  const { comboPick: publishedComboPick, crazyComboPicks: publishedCrazyComboPicks } =
+    usePublishedRoundBets()
+
   const labelBets = bets.filter(
     (bet) => bet.target.type === 'color' || bet.target.type === 'pattern',
   )
   const accessoryBets = bets.filter((bet) => bet.target.type === 'accessory')
+  const comboBet = bets.find((bet) => bet.target.type === 'combo') ?? null
+  const crazyComboBet = bets.find((bet) => bet.target.type === 'crazyCombo') ?? null
+  const showComboBar = hasComboBet(bets)
+  const showCrazyComboBar = hasCrazyComboBet(bets)
+  const showCrazyCombos = shouldShowRaceCrazyCombos({ bets })
   const showWinBar = didWin
 
   return (
@@ -52,7 +68,9 @@ export function SettlementBoard({
         hideSettledChips={hideSettledChips}
       />
 
-      <div className="mid-controls-stack">
+      <div
+        className={`mid-controls-stack${showCrazyCombos ? ' is-crazy' : ''}`}
+      >
         <div className="mid-controls">
           {showHistoryControl ? (
             <HistoryControl
@@ -107,6 +125,34 @@ export function SettlementBoard({
             })}
           </div>
         </div>
+
+        {showCrazyCombos ? (
+          <div className="crazy-combos-row">
+            <CrazyCombos
+              readOnly
+              showComboBar={showComboBar}
+              showCrazyComboBar={showCrazyComboBar}
+              comboPick={publishedComboPick}
+              crazyComboPicks={publishedCrazyComboPicks}
+              comboBet={comboBet}
+              crazyComboBet={crazyComboBet}
+              settleClass={
+                comboBet && settleByBetId?.[comboBet.id]
+                  ? ` is-settle-${settleByBetId[comboBet.id]}${
+                      hideSettledChips ? ' is-settle-gone' : ''
+                    }`
+                  : ''
+              }
+              crazyComboSettleClass={
+                crazyComboBet && settleByBetId?.[crazyComboBet.id]
+                  ? ` is-settle-${settleByBetId[crazyComboBet.id]}${
+                      hideSettledChips ? ' is-settle-gone' : ''
+                    }`
+                  : ''
+              }
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   )

@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { BettingBanner } from '../../betting/components/BettingBanner.jsx'
 import { uiAssets } from '../../betting/assets/uiAssets.js'
 import { formatMoney } from '../../betting/utils/formatMoney.js'
 import { useFullscreen } from '../../betting/hooks/useFullscreen.js'
 import { useHudViewportContext } from '../../hud/index.js'
 import { useCurrentRound } from '../../betting/hooks/useCurrentRound.js'
-import { usePublishedRoundBets, shouldShowRaceCrazyCombos } from '../../betting/state/roundBetsStore.js'
+import { usePublishedRoundBets, shouldShowRaceCrazyCombos, hasComboBet, hasCrazyComboBet } from '../../betting/state/roundBetsStore.js'
 import {
   useMockPotentialWin,
   useRaceElapsed,
@@ -41,7 +41,7 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
   })
   const potentialWin = useMockPotentialWin({ active: isRaceUiVisible })
   const { isFullscreen, toggleFullscreen } = useFullscreen()
-  const { roundId: betsRoundId, bets, crazyCombo: publishedCrazyCombo } =
+  const { roundId: betsRoundId, bets, comboPick: publishedComboPick, crazyComboPicks: publishedCrazyComboPicks } =
     usePublishedRoundBets()
   const [betsOpenForKey, setBetsOpenForKey] = useState(null)
   // Close CURRENT BETS when the race key changes (new round / phase).
@@ -50,6 +50,9 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
   }
   const betsOpen = Boolean(isRaceUiVisible && betsOpenForKey === raceKey)
   const betsDialogRef = useRef(null)
+  const betsTableRef = useRef(null)
+  const currentBetsToggleRef = useRef(null)
+  const overlayRef = useRef(null)
 
   const closeBets = useCallback(() => setBetsOpenForKey(null), [])
   useDialogFocus({
@@ -58,18 +61,15 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
     containerRef: betsDialogRef,
   })
 
-  const visibleBets =
-    round?.id != null && String(round.id) === String(betsRoundId ?? '')
-      ? bets
-      : []
+  const roundMatches = round?.id != null && String(round.id) === String(betsRoundId ?? '')
+  const visibleBets = roundMatches ? bets : []
+  const visibleComboPick = roundMatches ? publishedComboPick : null
 
-  const showCrazyCombos = shouldShowRaceCrazyCombos({
-    crazyCombo:
-      round?.id != null && String(round.id) === String(betsRoundId ?? '')
-        ? publishedCrazyCombo
-        : false,
-    bets: visibleBets,
-  })
+  const visibleCrazyComboPicks = roundMatches ? publishedCrazyComboPicks : null
+
+  const showCrazyCombos = shouldShowRaceCrazyCombos({ bets: visibleBets })
+  const showComboBar = hasComboBet(visibleBets)
+  const showCrazyComboBar = hasCrazyComboBet(visibleBets)
 
   useEffect(() => {
     if (!betsOpen) return undefined
@@ -80,22 +80,74 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [betsOpen, closeBets])
 
+  useLayoutEffect(() => {
+    const root = overlayRef.current
+    if (!root) return undefined
+
+    function syncToggleLift() {
+      if (
+        !betsOpen ||
+        !currentBetsToggleRef.current ||
+        !betsTableRef.current
+      ) {
+        root.style.removeProperty('--race-bets-lift')
+        return
+      }
+
+      const toggleRect = currentBetsToggleRef.current.getBoundingClientRect()
+      const tableTop = betsTableRef.current.getBoundingClientRect().top
+      const gap = Number.parseFloat(
+        getComputedStyle(root).getPropertyValue('--race-current-bets-table-gap'),
+      )
+      const safeGap = Number.isFinite(gap) ? gap : 0
+      // Lift so the button bottom sits above the board, not over the grid.
+      const lift = toggleRect.bottom - (tableTop - safeGap)
+      root.style.setProperty(
+        '--race-bets-lift',
+        `${Math.max(0, Math.round(lift))}px`,
+      )
+    }
+
+    syncToggleLift()
+
+    const table = betsTableRef.current
+    const observer =
+      typeof ResizeObserver !== 'undefined' && table
+        ? new ResizeObserver(syncToggleLift)
+        : null
+    observer?.observe(table)
+    window.addEventListener('resize', syncToggleLift)
+
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener('resize', syncToggleLift)
+      root.style.removeProperty('--race-bets-lift')
+    }
+  }, [
+    betsOpen,
+    visibleBets.length,
+    showCrazyCombos,
+    viewportScale,
+    orientation,
+  ])
+
   if (!isRaceUiVisible) {
     return null
   }
 
   const currentBetsToggle = (
     <button
+      ref={currentBetsToggleRef}
       type="button"
       className={`race-overlay__current-bets${betsOpen ? ' is-open' : ''}`}
-      style={{ backgroundImage: `url(${uiAssets.hatsGlassesBar})` }}
+      style={{ backgroundImage: `url(${uiAssets.myBetsHistory})` }}
       aria-label="Current bets"
       aria-expanded={betsOpen}
       aria-controls="race-current-bets-dialog"
       onClick={() => setBetsOpenForKey(betsOpen ? null : raceKey)}
     >
       <span className="race-overlay__current-bets-handle" aria-hidden="true">
-        <img src={uiAssets.scrollPositionThumb} alt="" draggable={false} />
+        <img src={uiAssets.historyBetsToggleArrow} alt="" draggable={false} />
       </span>
       CURRENT BETS
     </button>
@@ -103,6 +155,7 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
 
   return (
     <div
+      ref={overlayRef}
       className={`race-overlay${betsOpen ? ' is-bets-open' : ''}`}
       data-compact={compact ? 'true' : undefined}
       data-orient={orientation}
@@ -138,11 +191,17 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
             >
               <CurrentBetsBoard
                 bets={visibleBets}
-                toggle={currentBetsToggle}
+                tableRef={betsTableRef}
                 showCrazyCombos={showCrazyCombos}
+                showComboBar={showComboBar}
+                showCrazyComboBar={showCrazyComboBar}
+                comboPick={visibleComboPick}
+                crazyComboPicks={visibleCrazyComboPicks}
               />
             </div>
           ) : null}
+
+          <div className="race-overlay__toggle-portal">{currentBetsToggle}</div>
 
           <footer className="betting-footer race-overlay__footer">
             <div className="betting-footer__balance-wrap">
@@ -156,9 +215,7 @@ export function RaceOverlay({ balance = DEFAULT_BALANCE }) {
             </div>
 
             <div className="race-overlay__mid">
-              {!betsOpen ? currentBetsToggle : (
-                <span className="race-overlay__mid-spacer" aria-hidden="true" />
-              )}
+              <span className="race-overlay__mid-spacer" aria-hidden="true" />
             </div>
 
             <div className="betting-footer__total-wrap">

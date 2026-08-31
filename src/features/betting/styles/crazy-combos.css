@@ -1,5 +1,19 @@
 /* —— Crazy Combo payout bars (≈ Hats/Glasses size, slightly larger) —— */
+@import './combo-bar.css';
+@import './crazy-combo-bar.css';
+
 .mid-controls-stack {
+  --accessory-bar-h: calc(55px * var(--hud-scale));
+  --accessory-bar-w: calc(199px * var(--hud-scale));
+  --combo-bar-pays-w: calc(52px * var(--hud-scale));
+  --combo-bar-extra-w: calc(28px * var(--hud-scale));
+  --combo-bar-shell-w: calc(var(--accessory-bar-w) + var(--combo-bar-extra-w));
+  --combo-bar-w: calc(var(--combo-bar-shell-w) + var(--combo-bar-pays-w));
+  --crazy-combo-bar-shell-w: calc(340px * var(--hud-scale));
+  --crazy-combo-caption-tilt: -5deg;
+  --crazy-combo-caption-overlap: calc(8px * var(--hud-scale));
+  --combo-row-h: calc(65px * var(--hud-scale));
+
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -23,16 +37,29 @@
 }
 
 .mid-controls-stack.is-crazy {
-  gap: calc(8px * var(--hud-scale));
+  gap: 0;
+}
+
+.crazy-combos-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: calc(-8px * var(--hud-scale));
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /*
- * The payout row adds 57px to the stack below mid-controls. Since the HUD is
- * bottom-anchored, counter that offset for HISTORY so its viewport position
- * remains identical when Crazy Combo opens.
+ * Payout row height added below mid-controls. Counter-offset HISTORY so it
+ * stays put when the HUD grows upward (bottom-anchored shell).
  */
 .mid-controls-stack.is-crazy .mid-controls__history-slot {
-  transform: translateY(calc(57px * var(--hud-scale)));
+  transform: translateY(
+    calc((-8px * var(--hud-scale)) + var(--combo-row-h))
+  );
 }
 
 .mid-controls-stack.is-crazy .mid-controls {
@@ -49,17 +76,6 @@
   transform: none;
 }
 
-.crazy-combos-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  overflow: visible;
-}
-
 .crazy-combos {
   display: flex;
   align-items: flex-end;
@@ -69,173 +85,33 @@
   min-width: 0;
   width: 100%;
   max-width: 100%;
+  overflow: hidden;
 }
 
-.crazy-combos__item {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-width: 0;
-}
-
-/* Yellow ~Hats+; pink a bit longer but not full-row */
-.crazy-combos__item--combo {
-  flex: 0 0 calc(260px * var(--hud-scale));
-  width: calc(260px * var(--hud-scale));
-}
-
-.crazy-combos__item--crazy {
-  flex: 0 0 calc(340px * var(--hud-scale));
-  width: calc(340px * var(--hud-scale));
-}
-
-.crazy-combos__caption {
-  margin: 0 0 calc(2px * var(--hud-scale));
-  /* Match bar width only (track reserves space for PAYS on the right) */
-  width: 100%;
-  padding-right: calc(52px * var(--hud-scale));
-  box-sizing: border-box;
-  text-align: center;
-  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
-  font-size: calc(11px * var(--hud-font-scale));
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  text-transform: uppercase;
-  pointer-events: none;
-  /* Black outline */
-  -webkit-text-stroke: calc(1.2px * var(--hud-scale)) #000;
-  paint-order: stroke fill;
-  text-shadow:
-    calc(-1px * var(--hud-scale)) calc(-1px * var(--hud-scale)) 0 #000,
-    calc(1px * var(--hud-scale)) calc(-1px * var(--hud-scale)) 0 #000,
-    calc(-1px * var(--hud-scale)) calc(1px * var(--hud-scale)) 0 #000,
-    calc(1px * var(--hud-scale)) calc(1px * var(--hud-scale)) 0 #000;
-}
-
-.crazy-combos__item--combo .crazy-combos__caption {
-  color: #f5d24a;
-}
-
-.crazy-combos__item--crazy .crazy-combos__caption {
-  color: #ff6ec7;
-  white-space: nowrap;
-}
-
-.crazy-combos__track {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-width: 0;
-  padding-right: calc(52px * var(--hud-scale));
-  box-sizing: border-box;
-}
-
-.crazy-combos__bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc(6px * var(--hud-scale));
-  width: 100%;
-  min-width: 0;
-  height: calc(36px * var(--hud-scale));
-  padding: 0 calc(14px * var(--hud-scale));
-  border-radius: 999px;
-  border: calc(1.5px * var(--hud-scale)) solid rgba(255, 255, 255, 0.85);
-  box-sizing: border-box;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+.crazy-combos-row:has(.combo-bar__chip),
+.crazy-combos-row:has(.crazy-combo-bar__chip),
+.crazy-combos:has(.combo-bar__chip),
+.crazy-combos:has(.crazy-combo-bar__chip),
+.combo-bar:has(.combo-bar__chip),
+.crazy-combo-bar:has(.crazy-combo-bar__chip),
+.crazy-combo-bar,
+.crazy-combo-bar__track,
+.crazy-combo-bar__shell.is-complete,
+.crazy-combo-bar__shell.is-picking,
+.crazy-combos:has(.crazy-combo-bar.is-complete),
+.crazy-combos-row:has(.crazy-combo-bar.is-complete),
+.mid-controls-stack:has(.crazy-combo-bar.is-complete) {
   overflow: visible;
-  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
 }
 
-.crazy-combos__item--combo .crazy-combos__bar {
-  background: linear-gradient(
-    180deg,
-    #8a6a18 0%,
-    #e8c44a 22%,
-    #f6e08a 48%,
-    #c9a030 78%,
-    #6e5210 100%
-  );
-}
-
-.crazy-combos__item--crazy .crazy-combos__bar {
-  background: linear-gradient(
-    180deg,
-    #6a1848 0%,
-    #d24aa0 22%,
-    #f08ac8 48%,
-    #a03070 78%,
-    #4a1030 100%
-  );
-}
-
-.crazy-combos__item--crazy .crazy-combos__bar--slots {
-  justify-content: space-evenly;
-  gap: 0;
-  padding: 0 calc(18px * var(--hud-scale));
-}
-
-.crazy-combos__slot {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.crazy-combos__desc,
-.crazy-combos__slot-label {
-  flex-shrink: 0;
-  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
-  font-size: calc(12px * var(--hud-font-scale));
-  font-weight: 800;
-  color: #fff;
-  white-space: nowrap;
-  line-height: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
-}
-
-.crazy-combos__pays {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  flex-shrink: 0;
-  line-height: 1;
-  gap: 0;
+.mid-controls-stack.is-combo-active .crazy-combo-bar {
+  opacity: 0.5;
   pointer-events: none;
-  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
 }
 
-.crazy-combos__pays-label {
-  font-size: calc(8px * var(--hud-font-scale));
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1;
-}
-
-.crazy-combos__pays-value {
-  font-size: calc(14px * var(--hud-font-scale));
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  line-height: 1;
-}
-
-.crazy-combos__item--combo .crazy-combos__pays {
-  color: #f5d24a;
-  text-shadow: 0 0 6px rgba(245, 210, 74, 0.45);
-}
-
-.crazy-combos__item--crazy .crazy-combos__pays {
-  color: #ff6ec7;
-  text-shadow: 0 0 6px rgba(255, 110, 199, 0.45);
+.mid-controls-stack.is-crazy-combo-active .combo-bar,
+.mid-controls-stack.is-crazy-combo-active .mid-controls__accessories,
+.mid-controls-stack.is-crazy-combo-active .mid-controls__positions {
+  opacity: 0.5;
+  pointer-events: none;
 }

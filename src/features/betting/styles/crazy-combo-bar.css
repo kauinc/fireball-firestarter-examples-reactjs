@@ -1,0 +1,258 @@
+/* —— CRAZY COMBO bar (hats-glasses-bar.png; CC_Selection fill later) —— */
+.crazy-combo-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.crazy-combo-bar__caption {
+  position: relative;
+  z-index: 2;
+  width: var(--crazy-combo-bar-shell-w, calc(340px * var(--hud-scale)));
+  margin: 0 0 calc(-4px * var(--hud-scale) - var(--crazy-combo-caption-overlap, calc(8px * var(--hud-scale))));
+  box-sizing: border-box;
+  text-align: center;
+  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
+  font-size: calc(16px * var(--hud-font-scale));
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  -webkit-text-stroke: calc(1px * var(--hud-scale)) #000;
+  paint-order: stroke fill;
+  color: #ff5ec8;
+  transform: rotate(var(--crazy-combo-caption-tilt, -5deg));
+  transform-origin: center bottom;
+}
+
+.crazy-combo-bar__track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.crazy-combo-bar__shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  place-items: center;
+  flex: 0 0 var(--crazy-combo-bar-shell-w, calc(340px * var(--hud-scale)));
+  width: var(--crazy-combo-bar-shell-w, calc(340px * var(--hud-scale)));
+  max-width: 100%;
+  min-width: 0;
+  height: var(--accessory-bar-h, calc(55px * var(--hud-scale)));
+  padding: 0 calc(4px * var(--hud-scale));
+  border: 0;
+  background-color: transparent;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-sizing: border-box;
+  overflow: visible;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  --cc-selection-inset-y: calc(1px * var(--hud-scale));
+  --cc-selection-slot-inset-x: calc(-14px * var(--hud-scale));
+  --cc-selection-slot-size-x: 122%;
+  --cc-selection-size-y: 148%;
+}
+
+.crazy-combo-bar__shell:has(.crazy-combo-bar__chip) {
+  overflow: visible;
+}
+
+.crazy-combo-bar__shell.is-complete {
+  background-size: 100% 100%;
+}
+
+.crazy-combo-bar__shell:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.crazy-combo-bar.is-complete .crazy-combo-bar__caption {
+  color: #ff5ec8;
+}
+
+.crazy-combo-bar.is-pick-active .crazy-combo-bar__caption {
+  filter: drop-shadow(0 0 8px rgba(255, 94, 200, 0.55));
+}
+
+.crazy-combo-bar__slots {
+  position: relative;
+  grid-area: 1 / 1;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 calc(6px * var(--hud-scale));
+  box-sizing: border-box;
+  gap: calc(2px * var(--hud-scale));
+  justify-self: stretch;
+  align-self: stretch;
+}
+
+.crazy-combo-bar__shell.is-picking {
+  overflow: visible;
+}
+
+.crazy-combo-bar.is-pick-active .crazy-combo-bar__slot.is-active::before {
+  inset: calc(-1px * var(--hud-scale)) calc(-16px * var(--hud-scale));
+  background-size: 128% 156%;
+}
+
+.crazy-combo-bar.is-pick-active .crazy-combo-bar__slots {
+  padding: 0 calc(8px * var(--hud-scale));
+  gap: calc(4px * var(--hud-scale));
+}
+
+.crazy-combo-bar__slot {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(4px * var(--hud-scale));
+  min-width: 0;
+  height: calc(100% - calc(6px * var(--hud-scale)));
+  margin: calc(3px * var(--hud-scale)) 0;
+  padding: 0 calc(2px * var(--hud-scale));
+  border: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.crazy-combo-bar__slot--interactive {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.crazy-combo-bar.is-pick-active .crazy-combo-bar__slot {
+  height: 100%;
+  margin: 0;
+  padding: 0 calc(1px * var(--hud-scale));
+}
+
+.crazy-combo-bar__slot-label {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  text-align: center;
+  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
+  font-size: calc(12px * var(--hud-font-scale));
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.crazy-combo-bar__slot-doof {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: calc(28px * var(--hud-scale));
+  height: calc(28px * var(--hud-scale));
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.crazy-combo-bar__slot.is-active {
+  position: relative;
+  isolation: isolate;
+}
+
+.crazy-combo-bar__slot.is-active::before {
+  content: '';
+  position: absolute;
+  inset: var(--cc-selection-inset-y) var(--cc-selection-slot-inset-x);
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--cc-selection);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: var(--cc-selection-slot-size-x) var(--cc-selection-size-y);
+}
+
+.crazy-combo-bar__slot:not(.is-active):not(.has-pick) .crazy-combo-bar__slot-label {
+  opacity: 0.72;
+}
+
+.crazy-combo-bar__slot--interactive:focus,
+.crazy-combo-bar__slot--interactive:focus-visible {
+  outline: none;
+}
+
+.crazy-combo-bar__chip {
+  position: relative;
+  grid-area: 1 / 1;
+  justify-self: end;
+  align-self: center;
+  pointer-events: auto;
+  --chip-size: calc(28px * var(--hud-scale));
+  --chip-stack-x: calc(4px * var(--hud-scale));
+  --chip-stack-y: calc(2px * var(--hud-scale));
+  z-index: 3;
+}
+
+.crazy-combo-bar__pays {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: calc(-5px * var(--hud-scale));
+  line-height: 1;
+  gap: calc(1px * var(--hud-scale));
+  pointer-events: none;
+  font-family: 'Helvetica Neue Cyr', 'Segoe UI', sans-serif;
+  color: #ff5ec8;
+  text-shadow: 0 0 6px rgba(255, 94, 200, 0.45);
+  text-align: center;
+}
+
+.crazy-combo-bar__pays-label {
+  font-size: calc(8px * var(--hud-font-scale));
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.crazy-combo-bar__pays-value {
+  font-size: calc(24px * var(--hud-font-scale));
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 0.95;
+}
+
+.betting-overlay[data-orient='portrait'] .mid-controls-stack {
+  --crazy-combo-caption-tilt: -4deg;
+  --crazy-combo-caption-overlap: calc(6px * var(--hud-scale));
+}
+
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
+  .mid-controls-stack {
+  --crazy-combo-caption-tilt: -4deg;
+  --crazy-combo-caption-overlap: calc(6px * var(--hud-scale));
+}
