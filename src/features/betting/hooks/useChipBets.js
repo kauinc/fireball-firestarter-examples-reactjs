@@ -19,6 +19,8 @@ export function useChipBets(
   selectedPositions,
   roundId = null,
   crazyCombo = false,
+  comboPick = null,
+  crazyComboPicks = null,
 ) {
   const [bets, setBets] = useState([])
 
@@ -28,8 +30,8 @@ export function useChipBets(
   )
 
   useEffect(() => {
-    publishRoundBets(roundId, bets, { crazyCombo })
-  }, [roundId, bets, crazyCombo])
+    publishRoundBets(roundId, bets, { crazyCombo, comboPick, crazyComboPicks })
+  }, [roundId, bets, crazyCombo, comboPick, crazyComboPicks])
 
   const placeBet = useCallback(
     (amount, target) => {

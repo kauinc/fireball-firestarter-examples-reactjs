@@ -3,10 +3,6 @@
  * Shared compact shell lives in hud-compact.css.
  */
 
-.race-overlay[data-compact='true'] .race-bets-sheet__table .race-overlay__current-bets {
-  left: 50%;
-}
-
 .race-overlay[data-compact='true'] .race-bets-sheet__board .mid-controls__positions {
   display: none;
 }
@@ -104,14 +100,14 @@
 
 .race-overlay[data-orient='portrait'] .race-overlay__current-bets {
   width: calc(160px * var(--hud-scale));
-  height: calc(44px * var(--hud-scale));
+  height: calc(48px * var(--hud-scale));
   font-size: calc(11px * var(--hud-font-scale));
-  margin-bottom: 0;
+  padding-top: calc(8px * var(--hud-scale));
 }
 
 .race-overlay[data-orient='portrait'] .race-overlay__mid-spacer {
   width: calc(160px * var(--hud-scale));
-  height: calc(44px * var(--hud-scale));
+  height: calc(48px * var(--hud-scale));
 }
 
 .race-overlay[data-orient='landscape'][data-compact='true'] {
@@ -125,3 +121,4 @@
 .race-overlay[data-orient='landscape'][data-compact='true'] .race-overlay__current-bets {
   width: calc(200px * var(--hud-scale));
 }
+

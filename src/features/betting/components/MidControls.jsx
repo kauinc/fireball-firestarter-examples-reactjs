@@ -2,10 +2,12 @@ import { DOOF_ACCESSORIES, POSITION_OPTIONS } from '../constants/doofs.js'
 import {
   maxSelectedPosition,
   POSITION_FILL_WIDTH,
+  POSITION_LABELS,
   POSITION_THUMB_LEFT,
 } from '../constants/positions.js'
 import { uiAssets } from '../assets/uiAssets.js'
 import { accessoryTarget } from '../utils/betTargets.js'
+import { getComboBarState, comboAccessoryPickBarBackground } from '../utils/comboBars.js'
 import { ChipStack } from './ChipStack.jsx'
 import { HistoryControl } from './HistoryControl.jsx'
 import { CrazyCombos } from './CrazyCombos.jsx'
@@ -25,12 +27,26 @@ export function MidControls({
   historyOpen = false,
   onHistoryOpenChange,
   crazyCombo = false,
+  comboActive = false,
+  onComboBarPick,
+  onComboToggle,
+  comboPick = null,
+  comboBet = null,
+  crazyComboBet = null,
+  onPlaceComboBet,
+  crazyComboPickActive = false,
+  crazyComboActiveSlot = null,
+  crazyComboPicks = {},
+  onCrazyComboBarClick,
+  comboPickRequired = false,
 }) {
   const thumbPos = maxSelectedPosition(selectedPositions)
   const fillWidth = POSITION_FILL_WIDTH[thumbPos] || POSITION_FILL_WIDTH['1st']
 
   return (
-    <div className={`mid-controls-stack${crazyCombo ? ' is-crazy' : ''}`}>
+    <div
+      className={`mid-controls-stack${crazyCombo ? ' is-crazy' : ''}${comboActive ? ' is-combo-active' : ''}${crazyComboPickActive ? ' is-crazy-combo-active' : ''}`}
+    >
       <div className="mid-controls">
         <HistoryControl open={historyOpen} onOpenChange={onHistoryOpenChange} />
 
@@ -44,23 +60,37 @@ export function MidControls({
             const target = accessoryTarget(item)
             const iconSrc =
               item === 'Hats' ? uiAssets.hatIcon : uiAssets.glassesIcon
+            const { highlight: accessoryHighlight } = getComboBarState(comboActive)
+            const barAsset =
+              comboActive && accessoryHighlight
+                ? comboAccessoryPickBarBackground()
+                : uiAssets.hatsGlassesBar
+
+            function handleAccessoryActivate() {
+              if (disabled) return
+              if (comboActive && accessoryHighlight) {
+                onComboBarPick?.('accessories', item)
+                return
+              }
+              if (onPlaceBet) onPlaceBet(target)
+              onAccessoryChange?.(item)
+            }
+
             return (
               <button
                 key={item}
                 type="button"
-                className="mid-controls__accessory"
-                style={{ backgroundImage: `url(${uiAssets.hatsGlassesBar})` }}
-                disabled={disabled}
-                data-bet-drop={JSON.stringify(target)}
+                className={`mid-controls__accessory${comboActive && accessoryHighlight ? ' is-combo-inactive' : ''}`}
+                style={{ backgroundImage: `url(${barAsset})` }}
+                disabled={disabled || crazyComboPickActive}
+                data-bet-drop={comboActive ? undefined : JSON.stringify(target)}
                 onPointerUp={(event) => {
                   if (disabled || event.button !== 0) return
-                  if (onPlaceBet) onPlaceBet(target)
-                  onAccessoryChange?.(item)
+                  handleAccessoryActivate()
                 }}
                 onClick={(event) => {
                   if (disabled || event.detail !== 0) return
-                  if (onPlaceBet) onPlaceBet(target)
-                  onAccessoryChange?.(item)
+                  handleAccessoryActivate()
                 }}
               >
                 <span className="mid-controls__accessory-label">{item}</span>
@@ -106,11 +136,11 @@ export function MidControls({
                       key={pos}
                       type="button"
                       className={`mid-controls__position${selected ? ' is-selected' : ''}`}
-                      disabled={disabled}
+                      disabled={disabled || comboActive || crazyComboPickActive}
                       aria-pressed={selected}
                       onClick={() => onSelectPosition(pos)}
                     >
-                      <span>{pos}</span>
+                      <span>{POSITION_LABELS[pos] ?? pos}</span>
                     </button>
                   )
                 })}
@@ -137,7 +167,21 @@ export function MidControls({
 
       {crazyCombo ? (
         <div className="crazy-combos-row">
-          <CrazyCombos />
+          <CrazyCombos
+            comboActive={comboActive}
+            onComboToggle={onComboToggle}
+            comboDisabled={disabled}
+            comboPick={comboPick}
+            comboBet={comboBet}
+            crazyComboBet={crazyComboBet}
+            onPlaceBet={onPlaceComboBet}
+            crazyComboPickActive={crazyComboPickActive}
+            crazyComboActiveSlot={crazyComboActiveSlot}
+            crazyComboPicks={crazyComboPicks}
+            onCrazyComboBarClick={onCrazyComboBarClick}
+            crazyComboDisabled={disabled || comboActive}
+            comboPickRequired={comboPickRequired}
+          />
         </div>
       ) : null}
     </div>

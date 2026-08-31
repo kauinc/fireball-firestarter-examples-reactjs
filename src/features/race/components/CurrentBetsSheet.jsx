@@ -7,22 +7,27 @@ import { accessoryTarget } from '../../betting/utils/betTargets.js'
 
 /**
  * Read-only board body under the CURRENT BETS toggle.
- * Crazy Combo bars only when the round had combo-mode bets.
+ * Crazy Combo bars when the round had combo-mode activity.
  */
 export function CurrentBetsBoard({
   bets = [],
-  toggle = null,
+  tableRef = null,
   showCrazyCombos = false,
+  showComboBar = false,
+  showCrazyComboBar = false,
+  comboPick = null,
+  crazyComboPicks = null,
 }) {
   const labelBets = bets.filter(
     (bet) => bet.target.type === 'color' || bet.target.type === 'pattern',
   )
   const accessoryBets = bets.filter((bet) => bet.target.type === 'accessory')
+  const comboBet = bets.find((bet) => bet.target.type === 'combo') ?? null
+  const crazyComboBet = bets.find((bet) => bet.target.type === 'crazyCombo') ?? null
 
   return (
     <div className="race-bets-sheet__board betting-overlay__hud">
-      <div className="race-bets-sheet__table">
-        {toggle}
+      <div className="race-bets-sheet__table" ref={tableRef}>
         <DoofGrid disabled bets={bets} labelBets={labelBets} />
       </div>
 
@@ -76,7 +81,15 @@ export function CurrentBetsBoard({
 
         {showCrazyCombos ? (
           <div className="crazy-combos-row">
-            <CrazyCombos />
+            <CrazyCombos
+              readOnly
+              showComboBar={showComboBar}
+              showCrazyComboBar={showCrazyComboBar}
+              comboPick={comboPick}
+              comboBet={comboBet}
+              crazyComboBet={crazyComboBet}
+              crazyComboPicks={crazyComboPicks ?? {}}
+            />
           </div>
         ) : null}
       </div>

@@ -9,22 +9,44 @@ import {
   patternTarget,
   resolveFieldTarget,
 } from '../utils/betTargets.js'
+import { getComboBarState, comboPickBarBackground } from '../utils/comboBars.js'
+import { isCrazyComboDoofTaken } from '../constants/combo.js'
 
-function ChipLabel({ children, onPlace, disabled, betDrop }) {
+function ChipLabel({
+  children,
+  onPlace,
+  disabled,
+  betDrop,
+  comboActive = false,
+  comboHighlight = false,
+  onComboPick,
+}) {
+  const highlighted = comboActive && comboHighlight
+  const barAsset = highlighted ? comboPickBarBackground() : uiAssets.textBar
+
+  function handleActivate() {
+    if (disabled) return
+    if (comboActive && comboHighlight) {
+      onComboPick?.()
+      return
+    }
+    onPlace?.()
+  }
+
   return (
     <button
       type="button"
-      className="doof-grid__chip-label"
-      style={{ '--chip-bar': `url(${uiAssets.textBar})` }}
+      className={`doof-grid__chip-label${comboActive && comboHighlight ? ' is-combo-highlight' : ''}`}
+      style={{ '--chip-bar': `url(${barAsset})` }}
       disabled={disabled}
-      data-bet-drop={betDrop ? JSON.stringify(betDrop) : undefined}
+      data-bet-drop={comboActive ? undefined : betDrop ? JSON.stringify(betDrop) : undefined}
       onPointerUp={(event) => {
         if (disabled || event.button !== 0) return
-        onPlace?.()
+        handleActivate()
       }}
       onClick={(event) => {
         if (disabled || event.detail !== 0) return
-        onPlace?.()
+        handleActivate()
       }}
     >
       <span>{children}</span>
@@ -42,6 +64,12 @@ export function DoofGrid({
   labelBets = [],
   settleByBetId = null,
   hideSettledChips = false,
+  comboActive = false,
+  onComboBarPick,
+  crazyComboPickActive = false,
+  crazyComboActiveSlot = null,
+  crazyComboPicks = {},
+  onCrazyComboDoofPick,
 }) {
   const playableRef = useRef(null)
 
@@ -57,12 +85,16 @@ export function DoofGrid({
   }
 
   function placeFromFieldPointer(clientX, clientY) {
-    if (disabled || !onPlaceBet || !playableRef.current) {
+    if (
+      disabled ||
+      comboActive ||
+      crazyComboPickActive ||
+      !onPlaceBet ||
+      !playableRef.current
+    ) {
       onPlaceBet?.(null)
       return
     }
-    // Coords are relative to the PNG inner grid (doof-grid__playable),
-    // not the full texture — so split chips sit on the drawn lines.
     const rect = playableRef.current.getBoundingClientRect()
     if (rect.width <= 0 || rect.height <= 0) {
       onPlaceBet(null)
@@ -79,9 +111,11 @@ export function DoofGrid({
     onPlaceBet(resolveFieldTarget(nx, ny))
   }
 
+  const { highlight } = getComboBarState(comboActive)
+
   return (
     <div
-      className="doof-grid"
+      className={`doof-grid${comboActive ? ' is-combo-active' : ''}${crazyComboPickActive ? ' is-crazy-combo-active' : ''}`}
       role="group"
       aria-label="Betting board (pointer placement only in this prototype)"
       aria-disabled={disabled || undefined}
@@ -98,6 +132,9 @@ export function DoofGrid({
               <ChipLabel
                 disabled={disabled}
                 betDrop={colorTarget(color)}
+                comboActive={comboActive}
+                comboHighlight={highlight}
+                onComboPick={() => onComboBarPick?.('colors', color)}
                 onPlace={() => onPlaceBet?.(colorTarget(color))}
               >
                 {color}
@@ -107,7 +144,7 @@ export function DoofGrid({
                   className={`doof-grid__label-chip${settleClass(stack.id)}`}
                   data-bet-id={stack.id}
                   onPointerUp={(event) => {
-                    if (disabled || event.button !== 0) return
+                    if (disabled || comboActive || crazyComboPickActive || event.button !== 0) return
                     event.stopPropagation()
                     onPlaceBet?.(colorTarget(color))
                   }}
@@ -132,6 +169,9 @@ export function DoofGrid({
               <ChipLabel
                 disabled={disabled}
                 betDrop={patternTarget(pattern)}
+                comboActive={comboActive}
+                comboHighlight={highlight}
+                onComboPick={() => onComboBarPick?.('patterns', pattern)}
                 onPlace={() => onPlaceBet?.(patternTarget(pattern))}
               >
                 {pattern}
@@ -141,7 +181,7 @@ export function DoofGrid({
                   className={`doof-grid__label-chip${settleClass(stack.id)}`}
                   data-bet-id={stack.id}
                   onPointerUp={(event) => {
-                    if (disabled || event.button !== 0) return
+                    if (disabled || comboActive || crazyComboPickActive || event.button !== 0) return
                     event.stopPropagation()
                     onPlaceBet?.(patternTarget(pattern))
                   }}
@@ -156,7 +196,9 @@ export function DoofGrid({
 
       <div
         className="doof-grid__field"
-        style={{ backgroundImage: `url(${uiAssets.betField})` }}
+        style={{
+          backgroundImage: `url(${crazyComboPickActive ? uiAssets.ccBoard : uiAssets.betField})`,
+        }}
         onPointerUp={(event) => {
           if (event.button !== 0) return
           placeFromFieldPointer(event.clientX, event.clientY)
@@ -168,11 +210,30 @@ export function DoofGrid({
               const cell = getDoofBoardCell(color, pattern)
               const accessoryClass =
                 cell?.accessory === 'Hats' ? 'is-hat' : 'is-glasses'
+              const alreadyTaken =
+                crazyComboPickActive &&
+                isCrazyComboDoofTaken(crazyComboPicks, color, pattern)
+              const pickable =
+                crazyComboPickActive && crazyComboActiveSlot && !alreadyTaken
+              const cellClass = [
+                'doof-grid__cell',
+                accessoryClass,
+                pickable ? 'is-crazy-combo-pickable' : '',
+                alreadyTaken ? 'is-crazy-combo-taken' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
               return (
                 <div
                   key={`${color}-${pattern}`}
-                  className={`doof-grid__cell ${accessoryClass}`}
+                  className={cellClass}
                   aria-label={`${color} ${pattern}`}
+                  aria-disabled={alreadyTaken || undefined}
+                  onPointerUp={(event) => {
+                    if (!pickable || disabled || event.button !== 0) return
+                    event.stopPropagation()
+                    onCrazyComboDoofPick?.(color, pattern)
+                  }}
                 >
                   {cell ? (
                     <img src={cell.src} alt="" draggable={false} />
@@ -194,9 +255,7 @@ export function DoofGrid({
                   data-bet-id={bet.id}
                   style={fieldChipStyle(bet.target.anchor)}
                   onPointerUp={(event) => {
-                    if (disabled || event.button !== 0) return
-                    // Re-resolve from cursor so corners/edges still work
-                    // even when a stack is under the pointer.
+                    if (disabled || comboActive || crazyComboPickActive || event.button !== 0) return
                     event.stopPropagation()
                     placeFromFieldPointer(event.clientX, event.clientY)
                   }}

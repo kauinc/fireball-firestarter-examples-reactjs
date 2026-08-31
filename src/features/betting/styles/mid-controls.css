@@ -19,6 +19,7 @@
   --history-sheet-h: calc(192px * var(--hud-scale));
   --history-open-gap: 0px;
   --history-cols-h: calc(6px * var(--hud-scale));
+  --bets-toggle-drop: calc(4px * var(--hud-scale));
   --history-open-h: calc(
     var(--history-btn-h) + var(--history-open-gap) + var(--history-cols-h) +
       var(--history-sheet-h)
@@ -42,9 +43,11 @@
   left: 0;
   bottom: 0;
   z-index: 3;
+  display: grid;
+  place-items: center;
   width: 100%;
   height: var(--history-btn-h);
-  padding: 0 calc(12px * var(--hud-scale));
+  padding: calc(10px * var(--hud-scale)) calc(12px * var(--hud-scale)) 0;
   border: 0;
   border-radius: 999px;
   background-color: transparent;
@@ -55,38 +58,18 @@
   font-size: calc(13px * var(--hud-font-scale));
   font-weight: 800;
   letter-spacing: 0.06em;
+  line-height: 1;
   cursor: pointer;
   overflow: visible;
-  transition: bottom 280ms ease;
+  transform: translateY(var(--bets-toggle-drop));
+  transition: bottom 280ms ease, transform 280ms ease;
 }
 
 .mid-controls__history-slot.is-open .mid-controls__history {
   bottom: calc(var(--history-open-h) - var(--history-btn-h));
 }
 
-.mid-controls__history-handle {
-  position: absolute;
-  left: 50%;
-  top: calc(12px * var(--hud-scale));
-  z-index: 2;
-  width: calc(16px * var(--hud-scale));
-  height: calc(16px * var(--hud-scale));
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.mid-controls__history-handle img {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-  object-fit: contain;
-  display: block;
-  transition: transform 280ms ease;
-}
-
-.mid-controls__history.is-open .mid-controls__history-handle img {
-  transform: rotate(90deg);
-}
+/* Arrow rotation — overlay.css */
 
 /* Sheet grows up from the closed button baseline */
 .history-sheet {
@@ -293,6 +276,63 @@
 .mid-controls__accessory:focus,
 .mid-controls__accessory:focus-visible {
   outline: none;
+}
+
+.mid-controls__accessory.is-combo-dimmed {
+  opacity: 0.5;
+}
+
+.mid-controls__accessory.is-combo-inactive {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.mid-controls__accessory.is-combo-highlight {
+  background-image: none;
+}
+
+.mid-controls__accessory.is-combo-highlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background-image: var(--accessory-combo-bar);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.72;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mid-controls__accessory.is-combo-highlight .mid-controls__accessory-label,
+.mid-controls__accessory.is-combo-highlight .mid-controls__accessory-icon {
+  position: relative;
+  z-index: 1;
+}
+
+.mid-controls__accessory.is-combo-highlight .mid-controls__accessory-chip {
+  z-index: 1;
+}
+
+.mid-controls__accessory-pick-icon {
+  flex: 0 0 auto;
+  width: calc(22px * var(--hud-scale));
+  height: calc(22px * var(--hud-scale));
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.mid-controls-stack.is-combo-active .mid-controls__positions {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.mid-controls-stack.is-combo-active .crazy-combo-bar {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .mid-controls__positions {

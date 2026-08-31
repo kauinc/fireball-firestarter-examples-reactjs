@@ -1,13 +1,20 @@
+/** UI labels for position tabs (internal keys stay 1st / 2nd / 3rd). */
+export const POSITION_LABELS = Object.freeze({
+  '1st': '1st',
+  '2nd': 'Top 2',
+  '3rd': 'Top 3',
+})
+
 /** Fill width of All position bar inside the inset track (P1 / P2 / P3). */
 export const POSITION_FILL_WIDTH = Object.freeze({
-  '1st': 'calc(33.333% + 3px * var(--hud-scale))',
+  '1st': 'calc(33.333% - 3px * var(--hud-scale))',
   '2nd': 'calc(66.666% + 4px * var(--hud-scale))',
   '3rd': '100%',
 })
 
 /** Pointer center at the fill edge inside the frame. */
 export const POSITION_THUMB_LEFT = Object.freeze({
-  '1st': 'calc(34.666% + 3px * var(--hud-scale))',
+  '1st': 'calc(32.666% - 3px * var(--hud-scale))',
   '2nd': 'calc(65.333% + 4px * var(--hud-scale))',
   '3rd': '96%',
 })

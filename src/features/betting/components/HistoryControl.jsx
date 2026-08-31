@@ -15,12 +15,12 @@ export function HistoryControl({
       <button
         type="button"
         className={`mid-controls__history${open ? ' is-open' : ''}`}
-        style={{ backgroundImage: `url(${uiAssets.hatsGlassesBar})` }}
+        style={{ backgroundImage: `url(${uiAssets.myBetsHistory})` }}
         aria-expanded={open}
         onClick={() => onOpenChange?.(!open)}
       >
         <span className="mid-controls__history-handle" aria-hidden="true">
-          <img src={uiAssets.scrollPositionThumb} alt="" draggable={false} />
+          <img src={uiAssets.historyBetsToggleArrow} alt="" draggable={false} />
         </span>
         HISTORY
       </button>
