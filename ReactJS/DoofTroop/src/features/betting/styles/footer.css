@@ -1,0 +1,191 @@
+/* —— Footer —— */
+.betting-footer {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: calc(5px * var(--hud-scale));
+  width: 100%;
+  max-width: calc(980px * var(--hud-scale));
+  padding-top: calc(2px * var(--hud-scale));
+}
+
+:is(.betting-overlay, .race-overlay, .settlement-overlay):not([data-compact='true'])
+  :is(.betting-footer, .race-overlay__footer, .settlement-overlay__footer) {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  padding-right: calc(63px * var(--hud-scale));
+  box-sizing: border-box;
+}
+
+/* Tray children join the desktop row (CLEAR · chips · x2) */
+.betting-footer__tray {
+  display: contents;
+}
+
+.betting-footer__caption {
+  display: block;
+  margin-bottom: calc(2px * var(--hud-scale));
+  font-size: calc(10px * var(--hud-font-scale));
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--bet-text);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.betting-footer__balance-wrap,
+.betting-footer__total-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.betting-footer__balance-wrap {
+  width: var(--history-w);
+  margin-left: var(--history-col-shift);
+  align-items: center;
+}
+
+.betting-footer__meter {
+  width: calc(160px * var(--hud-scale));
+  height: calc(32px * var(--hud-scale));
+  padding: 0 calc(10px * var(--hud-scale));
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  font-size: calc(14px * var(--hud-font-scale));
+  font-weight: 800;
+  line-height: 1;
+}
+
+.betting-footer__round {
+  flex: 0 0 auto;
+  width: calc(58px * var(--hud-scale));
+  height: calc(58px * var(--hud-scale));
+  border: 0;
+  background-color: transparent;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: var(--bet-text);
+  font: inherit;
+  font-size: calc(9px * var(--hud-font-scale));
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  padding: 0;
+  transform: translateY(calc(5px * var(--hud-scale)));
+}
+
+.betting-footer__chips {
+  display: flex;
+  align-items: center;
+  gap: calc(4px * var(--hud-scale));
+  flex: 0 0 auto;
+}
+
+.betting-footer__chip {
+  position: relative;
+  width: calc(54px * var(--hud-scale));
+  height: calc(54px * var(--hud-scale));
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  color: #fff;
+  font: inherit;
+  font-size: calc(12px * var(--hud-font-scale));
+  font-weight: 800;
+  line-height: 1;
+}
+
+.betting-footer__chip img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.betting-footer__chip span {
+  position: relative;
+  z-index: 1;
+  -webkit-text-stroke: calc(0.8px * var(--hud-scale)) #111;
+  paint-order: stroke fill;
+}
+
+.betting-footer__chip.is-selected {
+  z-index: 1;
+  transform-origin: center bottom;
+  transform: translateY(calc(-3px * var(--hud-scale))) scale(1.14);
+}
+
+.betting-footer__menu-wrap {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  flex: 0 0 auto;
+  width: calc(58px * var(--hud-scale));
+  height: calc(58px * var(--hud-scale));
+}
+
+.betting-footer__menu {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background-color: transparent;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: default;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  pointer-events: none;
+}
+
+.betting-footer__menu-icon {
+  width: calc(24px * var(--hud-scale));
+  height: calc(18px * var(--hud-scale));
+  background:
+    linear-gradient(#fff, #fff) 0 0 / 100% calc(3px * var(--hud-scale))
+      no-repeat,
+    linear-gradient(#fff, #fff) 0 50% / 100% calc(3px * var(--hud-scale))
+      no-repeat,
+    linear-gradient(#fff, #fff) 0 100% / 100% calc(3px * var(--hud-scale))
+      no-repeat;
+}
+
+.betting-footer button:disabled {
+  cursor: default;
+  opacity: 0.78;
+}
+
+.betting-chip-ghost {
+  position: fixed;
+  z-index: var(--z-drag-ghost, 35);
+  width: calc(44px * var(--hud-scale));
+  height: calc(44px * var(--hud-scale));
+  transform: translate(-50%, -50%);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: calc(11px * var(--hud-font-scale));
+  font-weight: 800;
+  line-height: 1;
+  -webkit-text-stroke: calc(0.8px * var(--hud-scale)) #111;
+  paint-order: stroke fill;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}

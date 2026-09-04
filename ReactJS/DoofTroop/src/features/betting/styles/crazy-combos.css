@@ -1,0 +1,119 @@
+/* —— Crazy Combo payout bars (≈ Hats/Glasses size, slightly larger) —— */
+@import './combo-bar.css';
+@import './crazy-combo-bar.css';
+
+.mid-controls-stack {
+  --accessory-bar-h: calc(55px * var(--hud-scale));
+  --accessory-bar-w: calc(199px * var(--hud-scale));
+  --combo-bar-pays-w: calc(52px * var(--hud-scale));
+  --combo-bar-extra-w: calc(28px * var(--hud-scale));
+  --combo-bar-shell-w: calc(var(--accessory-bar-w) + var(--combo-bar-extra-w));
+  --combo-bar-w: calc(var(--combo-bar-shell-w) + var(--combo-bar-pays-w));
+  --crazy-combo-bar-shell-w: calc(340px * var(--hud-scale));
+  --crazy-combo-caption-tilt: -5deg;
+  --crazy-combo-caption-overlap: calc(8px * var(--hud-scale));
+  --combo-row-h: calc(65px * var(--hud-scale));
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: calc(764px * var(--hud-scale));
+  max-width: calc(764px * var(--hud-scale));
+  min-width: 0;
+  /* Same --board-shift-x as `.doof-grid` (set on overlay). */
+  transform: translateX(var(--board-shift-x, 0px));
+  padding-left: 0;
+  margin-left: 0;
+  box-sizing: border-box;
+  /* Fixed layout width so opening bars never recenters the stack on X */
+  flex-shrink: 0;
+}
+
+.mid-controls-stack .mid-controls {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-left: 0;
+  margin-left: 0;
+  transform: translateY(calc(-18px * var(--hud-scale)));
+}
+
+.mid-controls-stack.is-crazy {
+  gap: 0;
+}
+
+.crazy-combos-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: calc(-8px * var(--hud-scale));
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/*
+ * Payout row height added below mid-controls. Counter-offset HISTORY so it
+ * stays put when the HUD grows upward (bottom-anchored shell).
+ */
+.mid-controls-stack.is-crazy .mid-controls__history-slot {
+  transform: translateY(
+    calc((-8px * var(--hud-scale)) + var(--combo-row-h))
+  );
+}
+
+.mid-controls-stack.is-crazy .mid-controls {
+  transform: translateY(calc(-18px * var(--hud-scale)));
+}
+
+/* Compact / portrait: keep Hats→combo DOM order (no desktop Y nudge). */
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
+  .mid-controls-stack
+  .mid-controls,
+:is(.betting-overlay, .race-overlay, .settlement-overlay)[data-compact='true']
+  .mid-controls-stack.is-crazy
+  .mid-controls {
+  transform: none;
+}
+
+.crazy-combos {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: calc(14px * var(--hud-scale));
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.crazy-combos-row:has(.combo-bar__chip),
+.crazy-combos-row:has(.crazy-combo-bar__chip),
+.crazy-combos:has(.combo-bar__chip),
+.crazy-combos:has(.crazy-combo-bar__chip),
+.combo-bar:has(.combo-bar__chip),
+.crazy-combo-bar:has(.crazy-combo-bar__chip),
+.crazy-combo-bar,
+.crazy-combo-bar__track,
+.crazy-combo-bar__shell.is-complete,
+.crazy-combo-bar__shell.is-picking,
+.crazy-combos:has(.crazy-combo-bar.is-complete),
+.crazy-combos-row:has(.crazy-combo-bar.is-complete),
+.mid-controls-stack:has(.crazy-combo-bar.is-complete) {
+  overflow: visible;
+}
+
+.mid-controls-stack.is-combo-active .crazy-combo-bar {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.mid-controls-stack.is-crazy-combo-active .combo-bar,
+.mid-controls-stack.is-crazy-combo-active .mid-controls__accessories {
+  opacity: 0.5;
+  pointer-events: none;
+}
