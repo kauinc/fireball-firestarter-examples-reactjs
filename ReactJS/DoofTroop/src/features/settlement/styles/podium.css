@@ -1,0 +1,55 @@
+﻿/* Podium callouts over the 3D winners (2nd · 1st · 3rd) — scales with viewport. */
+.settlement-podium {
+  --podium-icon: clamp(56px, 6.5vw, 160px);
+  --podium-place: clamp(18px, 2.1vw, 36px);
+  --podium-time: clamp(13px, 1.5vw, 24px);
+  --podium-gap: clamp(2px, 0.35vw, 8px);
+  --podium-col-gap: clamp(20px, 3.5vw, 56px);
+
+  position: absolute;
+  top: clamp(2%, 3.5vh, 8%);
+  left: 50%;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: end;
+  column-gap: var(--podium-col-gap);
+  width: min(720px, 58vw);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.settlement-podium__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--podium-gap);
+  text-align: center;
+}
+
+.settlement-podium__col--1st {
+  transform: translateY(calc(-0.9 * var(--podium-gap) - 8px));
+}
+
+.settlement-podium__icon {
+  width: var(--podium-icon);
+  height: var(--podium-icon);
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.75));
+}
+
+.settlement-podium__place {
+  font-size: var(--podium-place);
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+}
+
+.settlement-podium__time {
+  font-size: var(--podium-time);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--podium-accent, #fff);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}

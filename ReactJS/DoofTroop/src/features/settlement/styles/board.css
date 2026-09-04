@@ -1,0 +1,76 @@
+﻿/**
+ * Settlement board — same geometry as betting MidControls + DoofGrid.
+ * Only extras: floating TOTAL WIN + read-only cursor.
+ */
+
+.settlement-board {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(8px * var(--hud-scale));
+  width: 100%;
+}
+
+/* Float above the board — no layout height (keeps board = betting). */
+.settlement-win {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(4px * var(--hud-scale));
+  transform: translate(-50%, calc(-100% - 10px * var(--hud-scale)));
+  pointer-events: none;
+}
+
+.settlement-win__label {
+  font-size: calc(12px * var(--hud-font-scale));
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+.settlement-win__bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(240px * var(--hud-scale));
+  height: calc(40px * var(--hud-scale));
+  padding: 0 calc(28px * var(--hud-scale));
+  border-radius: calc(12px * var(--hud-scale));
+  border: calc(2px * var(--hud-scale)) solid #e8ff4a;
+  background: rgba(0, 0, 0, 0.92);
+  box-shadow:
+    0 0 calc(10px * var(--hud-scale)) rgba(232, 255, 74, 0.45),
+    0 0 calc(2px * var(--hud-scale)) rgba(232, 255, 74, 0.8),
+    inset 0 1px 0 rgba(255, 255, 200, 0.12);
+}
+
+.settlement-win__amount {
+  font-size: calc(24px * var(--hud-font-scale));
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+}
+
+.settlement-overlay__footer {
+  width: 100%;
+  max-width: var(--hud-w);
+}
+
+.settlement-overlay__mid {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.settlement-board .mid-controls__accessory {
+  cursor: default;
+  pointer-events: none;
+}
